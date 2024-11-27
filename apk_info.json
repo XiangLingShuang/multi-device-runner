@@ -1,0 +1,12 @@
+{
+  "package_name": {
+    "序列号": {
+      "apk_path": "apk文件路径",
+      "package_name": "包名"
+    },
+    "序列号2": {
+      "apk_path": "apk文件路径",
+      "package_name": "包名"
+    }
+  }
+}

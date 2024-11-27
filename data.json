@@ -1,22 +1,13 @@
 {
-    "start": 1558921738.7175913,
-    "script": "test_blackjack.air",
+    "start": 1732703624.4621718,
+    "script": "test.air",
+    "log_dir_path": ".\\result\\2024_11_27_18_33_44",
     "tests": {
-        "52f0737": {
-            "status": 0,
-            "path": "test_blackjack.air\\log\\52f0737\\log.html"
-        },
-        "721QEBRL2VGKL": {
-            "status": 0,
-            "path": "test_blackjack.air\\log\\721QEBRL2VGKL\\log.html"
-        },
-        "9889db3057374c4544": {
-            "status": 0,
-            "path": "test_blackjack.air\\log\\9889db3057374c4544\\log.html"
-        },
-        "AKC0218625007616": {
-            "status": 0,
-            "path": "test_blackjack.air\\log\\AKC0218625007616\\log.html"
+        "10AD9T23YS002PJ": {
+            "status": 4294967295,
+            "device_name": "iqoo Z7i",
+            "path": ".\\10AD9T23YS002PJ\\log.html",
+            "log_path": ".\\10AD9T23YS002PJ\\log.txt"
         }
     }
 }

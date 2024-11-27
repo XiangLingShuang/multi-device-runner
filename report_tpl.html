@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link rel="shortcut icon" type="image/png" href="http://airtest.netease.com/static/img/icon/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Airtest 多设备并行测试结果汇总</title>
-  </head>
-  <style type="text/css">
+</head>
+<style type="text/css">
     *{
       margin: 0;
       padding: 0;
@@ -199,70 +199,73 @@
       background-size: 20px;
       background-position: center;
     }
-  </style>
-  <body class="zh">
-  <div class="container-fluid" >
-    <div class="container">
-      <div class="main">
-        <div class="material">
-          <h1>{{data['script']}}</h1>
-          <div class="center">
-            <div class="btn lang">Switch to English version</div>
-            <div class="time zh">开始时间：{{data['start']}}，耗时 <b>{{data['time']}}</b> 秒</div>
-            <div class="time en">Started at：{{data['start']}}，cost <b>{{data['time']}}</b> s</div>
-          </div>
-          <div class="head">
-            <header class="zh"><span class="rate"></span>成功率：</span> {{data["success"]}}/{{data["count"]}}</header>
-            <header class="en"><span class="rate">Ruccess rate：</span> {{data["success"]}}/{{data["count"]}}</header>
-            <div>
-              <div class="progress">
-                <div class="progress-bar progress-bar-success" role="progressbar"  aria-valuemin="0" aria-valuemax="100" style="width: {{data['success'] *100 / data['count']}}%">
-                  <span class="">{{'%0.2f' % (data["success"] *100 / data["count"])}}%</span>
-                </div>
-              </div>
-          </div>
-        </div>  
 
-        <div class="table">
-          <div class="table-title">
-            <span class="running_detail zh">运行详情</span>
-            <span class="running_detail en">Detail</span>
-          </div>
-          <div class="table-content">
-            <div class="table-row table-head">
-              <div class="table-col short zh">序号</div>
-              <div class="table-col short zh">状态</div>
-              <div class="table-col long zh">设备</div>
-              <div class="table-col short en">id</div>
-              <div class="table-col short en">result</div>
-              <div class="table-col long en">device</div>
-              <div class="table-col ">--</div>
+
+</style>
+<body class="zh">
+<div class="container-fluid">
+    <div class="container">
+        <div class="main">
+            <div class="material">
+                <h1>{{data['script']}}</h1>
+                <div class="center">
+                    <div class="btn lang">Switch to English version</div>
+                    <div class="time zh">开始时间：{{data['start']}}，耗时 <b>{{data['time']}}</b> 秒</div>
+                    <div class="time en">Started at：{{data['start']}}，cost <b>{{data['time']}}</b> s</div>
+                </div>
+                <div class="head">
+                    <header class="zh"><span class="rate">成功率：</span> {{data["success"]}}/{{data["count"]}}</header>
+                    <header class="en"><span class="rate">Ruccess rate：</span> {{data["success"]}}/{{data["count"]}}</header>
+                    <div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{data['success'] *100 / data['count']}}%">
+                                <span class="">{{'%0.2f' % (data["success"] *100 / data["count"])}}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table">
+                    <div class="table-title">
+                        <span class="running_detail zh">运行详情</span>
+                        <span class="running_detail en">Detail</span>
+                    </div>
+                    <div class="table-content">
+                        <div class="table-row table-head">
+                            <div class="table-col short zh">序号</div>
+                            <div class="table-col short zh">状态</div>
+                            <div class="table-col long zh">设备</div>
+                            <div class="table-col short en">id</div>
+                            <div class="table-col short en">result</div>
+                            <div class="table-col long en">device</div>
+                            <div class="table-col ">--</div>
+                        </div>
+                        {% for dev, item in data['tests'].items() %}
+                        <div class="table-row" path="{{item['path']}}">
+                            <div class="table-col short">{{loop.index}}</div>
+                            <div class="table-col short zh {{'success' if item['status']==0 else 'failed'}}">{{"成功" if item['status']==0 else "失败"}}</div>
+                            <div class="table-col short en {{'success' if item['status']==0 else 'failed'}}">{{"sucess" if item['status']==0 else "failed"}}</div>
+                            <div class="table-col long">{{dev+'('+item['device_name']+')'}}</div>
+                            <div class="table-col detail zh">点击可查看详情</div>
+                            <div class="table-col detail en">click to see detail</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
-            {% for dev, item in data['tests'].items() %}
-              <div class="table-row" path="{{item['path']}}">
-                <div class="table-col short">{{loop.index}}</div>
-                <div class="table-col short zh {{'success' if item['status']==0 else 'failed'}}">{{"成功" if item['status']==0 else "失败"}}</div>
-                <div class="table-col short en {{'success' if item['status']==0 else 'failed'}}">{{"sucess" if item['status']==0 else "failed"}}</div>
-                <div class="table-col long">{{dev}}</div>
-                <div class="table-col detail zh">点击可查看详情</div>
-                <div class="table-col detail en">click to see detail</div>
-              </div>
-            {% endfor %}
-          </div>
         </div>
-      </div>
+        <div class="iframe">
+            <div class="iframe-head"></div>
+            <iframe src='.'></iframe>
+            <div class="iframe-tools">
+                <div class="close"></div>
+                <a class="open" href='.' target='_blank'></a>
+            </div>
+        </div>
     </div>
-    <div class="iframe">
-      <div class="iframe-head"></div>
-      <iframe src='.'></iframe>
-      <div class="iframe-tools">
-          <div class="close"></div>
-          <a class="open" href='.' target='_blank'></a>
-      </div>
-    </div>
-  </div>
-  </body>
-  <script type="text/javascript">
+</div>
+</body>
+<script type="text/javascript">
     var Lang = 'zh' // or en
     var rows = document.querySelectorAll('.table-row')
     var iframe = document.querySelector('.iframe')
