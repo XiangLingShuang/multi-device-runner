@@ -10,6 +10,8 @@ import json
 import pandas as pd
 from airtest.core.android.adb import ADB
 from jinja2 import Environment, FileSystemLoader
+from my_lib import *
+from my_lib.file_process import save_txt_data
 
 
 def run(devices, air, run_all=False):
@@ -127,53 +129,6 @@ def run_on_multi_device(devices, air, results, run_all):
     return tasks
 
 
-# def create_folder(base_dir, name):
-#     """
-#     创建一个文件夹，如果不存在。
-#
-#     :param base_dir: 基础目录。
-#     :param name: 文件夹名称。
-#     :return: 创建的文件夹路径。
-#     """
-#     folder_path = os.path.join(base_dir, name)
-#     if not os.path.exists(folder_path):
-#         os.makedirs(folder_path, exist_ok=True)
-#     return folder_path
-
-
-# def create_log_dir(device, timestamp):
-#     """
-#     为给定的设备创建一个日志目录。
-#
-#     :param device: 设备名称或标识符。
-#     :param timestamp: 时间戳，用于生成目录名称。
-#     :return: 创建的日志目录的路径。
-#     """
-#     # 基础目录路径
-#     base_dir = '.\\result'
-#
-#     # 将时间戳转换为时间元组
-#     time_tuple = time.localtime(timestamp)
-#
-#     # 根据时间元组生成文件夹名称
-#     folder_name = time.strftime("%Y_%m_%d_%H_%M_%S", time_tuple)
-#
-#     # 构造目标文件夹的完整路径
-#     folder_path = os.path.join(base_dir, folder_name)
-#
-#     # 如果文件夹不存在，则创建它
-#     if not os.path.exists(folder_path):
-#         os.makedirs(folder_path, exist_ok=True)
-#
-#     # 将设备名中的不允许的字符替换掉，并创建设备专用的子文件夹
-#     log_dir = os.path.join(folder_path, device.replace(".", "_").replace(':', '_'))
-#     if not os.path.exists(log_dir):
-#         os.makedirs(log_dir, exist_ok=True)
-#
-#     # 返回创建的日志目录路径
-#     return log_dir
-
-
 def create_time_folder(timestamp):
     """
     根据给定的时间戳创建一个以时间格式命名的文件夹。
@@ -196,6 +151,8 @@ def create_time_folder(timestamp):
     # 如果文件夹不存在，则创建它
     if not os.path.exists(folder_path):
         os.makedirs(folder_path, exist_ok=True)
+            # 将文件夹名保存在 current_log_folder.txt 中
+        save_txt_data(folder_name,os.path.join(base_dir, 'current_log_folder.txt'))
 
     # 返回创建的文件夹路径
     return folder_path
@@ -293,7 +250,7 @@ def run_summary(data):
 
 def get_devices(dev):
     """
-    根据设备序列号查询���备型号。
+    根据设备序列号查询设备型号。
 
     :param dev: 设备序列号。
     :return: 设备型号名称，如果找不到则返回'NULL'。

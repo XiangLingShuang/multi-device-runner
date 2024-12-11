@@ -1,7 +1,7 @@
 {
-    "start": 1733908300.3774624,
+    "start": 1733910757.8697853,
     "script": "test.air",
-    "log_dir_path": ".\\result\\2024_12_11_17_11_40",
+    "log_dir_path": ".\\result\\2024_12_11_17_52_37",
     "tests": {
         "ede2c3fd": {
             "status": 0,
