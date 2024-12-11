@@ -122,42 +122,56 @@ def run_on_multi_device(devices, air, results, run_all):
                 'path': log_dir,
             })
         except Exception as e:
-            # 打印异常信息
+            print(f"Error running on device {dev}: {e}")
             traceback.print_exc()
     return tasks
 
 
-def create_log_dir(device, timestamp):
-    """
-    为给定的设备创建一个日志目录。
+# def create_folder(base_dir, name):
+#     """
+#     创建一个文件夹，如果不存在。
+#
+#     :param base_dir: 基础目录。
+#     :param name: 文件夹名称。
+#     :return: 创建的文件夹路径。
+#     """
+#     folder_path = os.path.join(base_dir, name)
+#     if not os.path.exists(folder_path):
+#         os.makedirs(folder_path, exist_ok=True)
+#     return folder_path
 
-    :param device: 设备名称或标识符。
-    :param timestamp: 时间戳，用于生成目录名称。
-    :return: 创建的日志目录的路径。
-    """
-    # 基础目录路径
-    base_dir = '.\\result'
 
-    # 将时间戳转换为时间元组
-    time_tuple = time.localtime(timestamp)
-
-    # 根据时间元组生成文件夹名称
-    folder_name = time.strftime("%Y_%m_%d_%H_%M_%S", time_tuple)
-
-    # 构造目标文件夹的完整路径
-    folder_path = os.path.join(base_dir, folder_name)
-
-    # 如果文件夹不存在，则创建它
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path, exist_ok=True)
-
-    # 将设备名中的不允许的字符替换掉，并创建设备专用的子文件夹
-    log_dir = os.path.join(folder_path, device.replace(".", "_").replace(':', '_'))
-    if not os.path.exists(log_dir):
-        os.makedirs(log_dir, exist_ok=True)
-
-    # 返回创建的日志目录路径
-    return log_dir
+# def create_log_dir(device, timestamp):
+#     """
+#     为给定的设备创建一个日志目录。
+#
+#     :param device: 设备名称或标识符。
+#     :param timestamp: 时间戳，用于生成目录名称。
+#     :return: 创建的日志目录的路径。
+#     """
+#     # 基础目录路径
+#     base_dir = '.\\result'
+#
+#     # 将时间戳转换为时间元组
+#     time_tuple = time.localtime(timestamp)
+#
+#     # 根据时间元组生成文件夹名称
+#     folder_name = time.strftime("%Y_%m_%d_%H_%M_%S", time_tuple)
+#
+#     # 构造目标文件夹的完整路径
+#     folder_path = os.path.join(base_dir, folder_name)
+#
+#     # 如果文件夹不存在，则创建它
+#     if not os.path.exists(folder_path):
+#         os.makedirs(folder_path, exist_ok=True)
+#
+#     # 将设备名中的不允许的字符替换掉，并创建设备专用的子文件夹
+#     log_dir = os.path.join(folder_path, device.replace(".", "_").replace(':', '_'))
+#     if not os.path.exists(log_dir):
+#         os.makedirs(log_dir, exist_ok=True)
+#
+#     # 返回创建的日志目录路径
+#     return log_dir
 
 
 def create_time_folder(timestamp):
@@ -279,7 +293,7 @@ def run_summary(data):
 
 def get_devices(dev):
     """
-    根据设备序列号查询设备型号。
+    根据设备序列号查询���备型号。
 
     :param dev: 设备序列号。
     :return: 设备型号名称，如果找不到则返回'NULL'。

@@ -1,13 +1,19 @@
 {
-    "start": 1732703624.4621718,
+    "start": 1733908300.3774624,
     "script": "test.air",
-    "log_dir_path": ".\\result\\2024_11_27_18_33_44",
+    "log_dir_path": ".\\result\\2024_12_11_17_11_40",
     "tests": {
-        "10AD9T23YS002PJ": {
-            "status": 4294967295,
-            "device_name": "iqoo Z7i",
-            "path": ".\\10AD9T23YS002PJ\\log.html",
-            "log_path": ".\\10AD9T23YS002PJ\\log.txt"
+        "ede2c3fd": {
+            "status": 0,
+            "device_name": "oneplus ace 3",
+            "path": ".\\ede2c3fd\\log.html",
+            "log_path": ".\\ede2c3fd\\log.txt"
+        },
+        "h6xwqwkzqsa6onj7": {
+            "status": 0,
+            "device_name": "redmi note 8 pro",
+            "path": ".\\h6xwqwkzqsa6onj7\\log.html",
+            "log_path": ".\\h6xwqwkzqsa6onj7\\log.txt"
         }
     }
 }

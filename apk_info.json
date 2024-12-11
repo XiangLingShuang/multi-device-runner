@@ -1,12 +1,143 @@
 {
+  "test_package_name": "com.upublishing.survivorisland",
   "package_name": {
-    "序列号": {
-      "apk_path": "apk文件路径",
-      "package_name": "包名"
-    },
-    "序列号2": {
-      "apk_path": "apk文件路径",
-      "package_name": "包名"
-    }
+    "序列号": [
+      {
+        "apk_channel": "xiaomi",
+        "apk_path": "apk文件路径",
+        "package_name": "包名"
+      }
+    ],
+    "序列号2": [
+      {
+        "apk_channel": "vivo",
+        "apk_path": "apk文件路径",
+        "package_name": "包名"
+      },
+      {
+        "apk_channel": "taptap",
+        "apk_path": "apk文件路径",
+        "package_name": "包名"
+      }
+    ]
+  },
+  "com.upublishing.throwingknife": {
+    "h6xwqwkzqsa6onj7": [
+      {
+        "apk_channel": "xiaomi",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-xiaomi-2024-11-26-12-10-40-9.0.apk",
+        "package_name": "com.upublishing.throwingknife.mi"
+      }
+    ],
+    "ede2c3fd": [
+      {
+        "apk_channel": "taptap",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-taptapv4-2024-11-26-12-11-55-9.0.apk",
+        "package_name": "com.upublishing.throwingknife"
+      },
+      {
+        "apk_channel": "3839",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-3839-2024-11-26-12-09-53-9.0.apk",
+        "package_name": "com.upublishing.throwingknife"
+      }
+    ],
+    "15430196920086O": [
+      {
+        "apk_channel": "vivo",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-vivo-2024-11-26-12-10-40-9.0.apk",
+        "package_name": "com.upublishing.throwingknife.vivo"
+      }
+    ],
+    "10AD9T23YS002PJ": [
+      {
+        "apk_channel": "official",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-official-2024-11-26-12-10-03-9.0.apk",
+        "package_name": "com.upublishing.throwingknife"
+      }
+    ]
+  },
+  "com.upublishing.dlyxxd": {
+    "h6xwqwkzqsa6onj7": [
+    ],
+    "ede2c3fd": [
+      {
+        "apk_channel": "taptap",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-TapTap-0.0.95\\taptap\\com.upublishing.dlyxxd-taptap-2024-11-29-18-34-42-1.0.95.apk",
+        "package_name": "com.upublishing.dlyxxd"
+      },
+      {
+        "apk_channel": "3839",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-3839-0.0.95\\3839\\com.upublishing.dlyxxd-3839-2024-11-29-18-31-13-1.0.95.apk",
+        "package_name": "com.upublishing.dlyxxd"
+      },
+      {
+        "apk_channel": "official",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-OFFICIAL-0.0.95\\official\\com.upublishing.dlyxxd-official-2024-11-29-18-29-55-1.0.95.apk",
+        "package_name": "com.upublishing.dlyxxd"
+      }
+    ],
+    "15430196920086O": [
+    ],
+    "10AD9T23YS002PJ": [
+    ]
+  },
+  "com.upublishing.idlemagicschool": {
+    "ede2c3fd": [
+      {
+        "apk_channel": "official",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\IdleMagicSchool-official-1.0.9.apk",
+        "package_name": "com.upublishing.idlemagicschool"
+      }
+    ],
+    "h6xwqwkzqsa6onj7": [
+      {
+        "apk_channel": "xiaomi",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\IdleMagicSchool-xiaomi-1.0.9.apk",
+        "package_name": "com.upublishing.idlemagicschool.mi"
+      }
+    ],
+    "10AD9T23YS002PJ": [
+      {
+        "apk_channel": "vivo",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\IdleMagicSchool-vivo-1.0.9.apk",
+        "package_name": "com.upublishing.idlemagicschool.vivo"
+      }
+    ]
+  },
+  "com.upublishing.simplealchemy": {
+    "ede2c3fd": [
+    ],
+    "h6xwqwkzqsa6onj7": [
+      {
+        "apk_channel": "3839",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.simplealchemy-3839-2024-11-28-16-08-26-0.3.214.apk",
+        "package_name": "com.upublishing.simplealchemy"
+      }
+    ],
+    "10AD9T23YS002PJ": [
+    ]
+  },
+  "com.upublishing.survivorisland": {
+    "ede2c3fd": [
+      {
+        "apk_channel": "3839",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-3839-0.0.78\\3839\\com.upublishing.survivorisland-3839-2024-12-11-12-29-14-160.apk",
+        "package_name": "com.upublishing.survivorisland"
+      }
+    ],
+    "h6xwqwkzqsa6onj7": [
+      {
+        "apk_channel": "xiaomi",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-XIAOMI-0.0.78\\xiaomi\\com.upublishing.survivorisland-xiaomi-2024-12-11-12-29-21-160.apk",
+        "package_name": "com.upublishing.survivorisland.mi"
+      }
+    ],
+    "15430196920086O": [
+      {
+        "apk_channel": "vivo",
+        "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-VIVO-0.0.78\\vivo\\com.upublishing.survivorisland-vivo-2024-12-11-12-29-30-160.apk",
+        "package_name": "com.upublishing.survivorisland.vivo"
+      }
+    ]
   }
 }
