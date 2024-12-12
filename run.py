@@ -10,8 +10,7 @@ import json
 import pandas as pd
 from airtest.core.android.adb import ADB
 from jinja2 import Environment, FileSystemLoader
-from my_lib import *
-from my_lib.file_process import save_txt_data
+from my_lib.file_process import *
 
 
 def run(devices, air, run_all=False):
@@ -20,7 +19,7 @@ def run(devices, air, run_all=False):
 
     :param devices: 要进行测试的设备列表。
     :param air: 测试脚本的路径。
-    :param run_all: 是否重新开始测试。True 表示从头开始测试，False 表示从data.json保存的进度继续测试。
+    :param run_all: 是否重新开始测试。True 表示从头开始测试,False 表示从data.json保存的进度继续测试。 
     """
     try:
         # 加载测试进度数据
