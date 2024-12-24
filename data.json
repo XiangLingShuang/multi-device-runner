@@ -1,14 +1,8 @@
 {
-    "start": 1733910757.8697853,
-    "script": "test.air",
-    "log_dir_path": ".\\result\\2024_12_11_17_52_37",
+    "start": 1735010205.8886836,
+    "script": "start_app.air",
+    "log_dir_path": ".\\result\\2024_12_24_11_16_45",
     "tests": {
-        "ede2c3fd": {
-            "status": 0,
-            "device_name": "oneplus ace 3",
-            "path": ".\\ede2c3fd\\log.html",
-            "log_path": ".\\ede2c3fd\\log.txt"
-        },
         "h6xwqwkzqsa6onj7": {
             "status": 0,
             "device_name": "redmi note 8 pro",

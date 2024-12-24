@@ -1,0 +1,151 @@
+{
+    "config": {
+        "package_name_list": [
+            "com.upublishing.survivorisland",
+            "com.upublishing.dlyxxd",
+            "com.upublishing.idlemagicschool",
+            "com.upublishing.simplealchemy",
+            "com.test.test",
+            "com.upublishing.footballacademy"
+        ],
+        "devices_list": [
+            "h6xwqwkzqsa6onj7",
+            "ede2c3fd",
+            "15430196920086O",
+            "10AD9T23YS002PJ"
+        ],
+        "apk_channel_list": [
+            "xiaomi",
+            "vivo",
+            "taptap",
+            "official",
+            "3839"
+        ]
+    },
+    "data": {
+        "test_package_name": "com.upublishing.simplealchemy",
+        "com.upublishing.throwingknife": {
+            "h6xwqwkzqsa6onj7": [
+                {
+                    "apk_channel": "xiaomi",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-xiaomi-2024-11-26-12-10-40-9.0.apk",
+                    "package_name": "com.upublishing.throwingknife.mi"
+                }
+            ],
+            "ede2c3fd": [
+                {
+                    "apk_channel": "taptap",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-taptapv4-2024-11-26-12-11-55-9.0.apk",
+                    "package_name": "com.upublishing.throwingknife"
+                },
+                {
+                    "apk_channel": "3839",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-3839-2024-11-26-12-09-53-9.0.apk",
+                    "package_name": "com.upublishing.throwingknife"
+                }
+            ],
+            "15430196920086O": [
+                {
+                    "apk_channel": "vivo",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-vivo-2024-11-26-12-10-40-9.0.apk",
+                    "package_name": "com.upublishing.throwingknife.vivo"
+                }
+            ],
+            "10AD9T23YS002PJ": [
+                {
+                    "apk_channel": "official",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\com.upublishing.throwingknife-official-2024-11-26-12-10-03-9.0.apk",
+                    "package_name": "com.upublishing.throwingknife"
+                }
+            ]
+        },
+        "com.upublishing.dlyxxd": {
+            "h6xwqwkzqsa6onj7": [],
+            "ede2c3fd": [
+                {
+                    "apk_channel": "taptap",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-TapTap-0.0.95\\taptap\\com.upublishing.dlyxxd-taptap-2024-11-29-18-34-42-1.0.95.apk",
+                    "package_name": "com.upublishing.dlyxxd"
+                },
+                {
+                    "apk_channel": "3839",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-3839-0.0.95\\3839\\com.upublishing.dlyxxd-3839-2024-11-29-18-31-13-1.0.95.apk",
+                    "package_name": "com.upublishing.dlyxxd"
+                },
+                {
+                    "apk_channel": "official",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-OFFICIAL-0.0.95\\official\\com.upublishing.dlyxxd-official-2024-11-29-18-29-55-1.0.95.apk",
+                    "package_name": "com.upublishing.dlyxxd"
+                }
+            ],
+            "15430196920086O": [],
+            "10AD9T23YS002PJ": []
+        },
+        "com.upublishing.idlemagicschool": {
+            "ede2c3fd": [
+                {
+                    "device": "ede2c3fd",
+                    "apk_channel": "3839",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\IdleMagicSchool-official-1.0.9.apk"
+                }
+            ],
+            "h6xwqwkzqsa6onj7": [
+                {
+                    "device": "h6xwqwkzqsa6onj7",
+                    "apk_channel": "xiaomi",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\IdleMagicSchool-xiaomi-1.0.9.apk"
+                }
+            ],
+            "15430196920086O": [
+                {
+                    "device": "15430196920086O",
+                    "apk_channel": "vivo",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\IdleMagicSchool-vivo-1.0.9.apk"
+                }
+            ]
+        },
+        "com.upublishing.simplealchemy": {
+            "ede2c3fd": [],
+            "h6xwqwkzqsa6onj7": [
+                {
+                    "apk_channel": "official",
+                    "apk_path": "C:/Users/lingshuang.xiang/Downloads/com.upublishing.simplealchemy-official-2024-12-17-10-34-26-0.3.248.apk",
+                    "package_name": "com.upublishing.simplealchemy"
+                }
+            ],
+            "10AD9T23YS002PJ": []
+        },
+        "com.upublishing.survivorisland": {
+            "ede2c3fd": [
+                {
+                    "apk_channel": "taptap",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\survivorIsland-taptap (1).apk",
+                    "package_name": "com.upublishing.survivorisland"
+                }
+            ],
+            "h6xwqwkzqsa6onj7": [
+                {
+                    "apk_channel": "xiaomi",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-OFFICIAL-0.0.84\\official\\com.upublishing.survivorisland-official-2024-12-12-19-17-35-160.apk",
+                    "package_name": "com.upublishing.survivorisland"
+                }
+            ],
+            "15430196920086O": [
+                {
+                    "apk_channel": "vivo",
+                    "apk_path": "C:\\Users\\lingshuang.xiang\\Downloads\\Build-VIVO-0.0.84\\vivo\\com.upublishing.survivorisland-vivo-2024-12-12-19-17-44-160.apk",
+                    "package_name": "com.upublishing.survivorisland.vivo"
+                }
+            ]
+        },
+        "com.test.test": {
+            "ede2c3fd": [
+                {
+                    "apk_channel": "3839",
+                    "apk_path": "C:/Users/lingshuang.xiang/Downloads/FootballAcademy-3839.apk",
+                    "package_name": "com.test.test"
+                }
+            ]
+        }
+    }
+}

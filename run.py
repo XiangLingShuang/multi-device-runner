@@ -371,5 +371,5 @@ if __name__ == '__main__':
     devices_id_list = [tmp[0] for tmp in ADB().devices()]
     # air_folder = "tutorial.air"
     # run(devices_id_list, air_folder, run_all=True)
-    air_folder = "test.air"
+    air_folder = "start_app.air"
     run(devices_id_list, air_folder, run_all=True)

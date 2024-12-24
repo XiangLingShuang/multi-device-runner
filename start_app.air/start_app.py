@@ -34,7 +34,7 @@ adb = ADB(device_id)
 # 配置信息
 # 读取apk_info.json文件
 with open('apk_info.json', 'r', encoding="utf-8") as f:
-    apk_info = json.load(f)
+    apk_info = json.load(f).get("data")
 
 test_package_name = apk_info.get("test_package_name")
 test_info = apk_info.get(test_package_name, {}).get(device_id, [])
@@ -88,6 +88,7 @@ for test_dict in test_info:
                         file.write(line_str + "\n")
                 # 在此处添加日志验证逻辑
                 if "[Pub_Gravity] initialize success" in line_str:
+                # if "android引力引擎初始化成功==========" in line_str:
                     is_initialize_success = True
                     log("引力引擎启动成功")
                     stop_app(package_name)
