@@ -5,11 +5,9 @@ from tkinter import ttk, filedialog
 # 从 JSON 文件中加载数据
 json_file_path = 'apk_info.json'
 
-
 def load_data():
     with open(json_file_path, 'r', encoding='utf-8') as f:
         return json.load(f)
-
 
 data = load_data()
 
@@ -24,7 +22,7 @@ def save_selection(value):
 
     # 读取当前表单的内容
     current_forms_data = {}
-    for serial_number_var, device_var, apk_channel_var, path_var in forms:
+    for serial_number_var, device_var, apk_channel_var, path_var, row in forms:
         device = device_var.get()
         apk_channel = apk_channel_var.get()
         path = path_var.get()
@@ -54,7 +52,7 @@ def save_selection(value):
 
     # 更新或新增包名对应的数据
     if value in data["data"]:
-        data["data"][value].update(current_forms_data)
+        data["data"][value] = current_forms_data  # 直接覆盖旧数据
     else:
         data["data"][value] = current_forms_data
 
@@ -79,7 +77,6 @@ def load_forms_for_package(package_name):
         for details in details_list:
             add_form(serial_number, serial_number, details["apk_channel"], details["apk_path"], row)
             row += 2
-
 
 def add_form(serial_number="", device="", apk_channel="", path="", row=None):
     # 添加一个新的表单
@@ -112,20 +109,75 @@ def add_form(serial_number="", device="", apk_channel="", path="", row=None):
     path_button = tk.Button(root, text="选择文件", command=lambda: select_file(path_var))
     path_button.grid(row=row + 1, column=3, padx=5, pady=5)
 
-    forms.append((serial_number_var, device_var, apk_channel_var, path_var))
+    # 添加“-”按钮用于删除当前表单
+    reduce_button = tk.Button(root, text="-", command=lambda: reduce_form(row))
+    reduce_button.grid(row=row + 1, column=4, padx=5, pady=5)
 
+    # 将行号与表单数据一起存储
+    forms.append((serial_number_var, device_var, apk_channel_var, path_var, row))
+
+def reduce_form(row):
+    # 删除指定行的表单
+    for widgets in root.grid_slaves():
+        if int(widgets.grid_info()["row"]) == row or int(widgets.grid_info()["row"]) == row + 1:
+            widgets.destroy()
+
+    # 从 forms 列表中移除对应的表单数据
+    forms[:] = [form for form in forms if form[4] != row]
+
+    # 获取当前包名
+    current_package = combo_value.get()
+
+    # 重新生成当前包名下的数据并保存
+    current_forms_data = {}
+    for serial_number_var, device_var, apk_channel_var, path_var, row in forms:
+        device = device_var.get()
+        apk_channel = apk_channel_var.get()
+        path = path_var.get()
+
+        # 根据 path 中的字段更新 package_name
+        package_name = current_package
+        if "xiaomi" in path.lower():
+            package_name = current_package + ".mi"
+        elif "vivo" in path.lower():
+            package_name = current_package + ".vivo"
+        elif "oppo" in path.lower():
+            package_name = current_package + ".oppo"
+
+        # 如果序列号已经存在，追加到列表中，否则创建新列表
+        if device in current_forms_data:
+            current_forms_data[device].append({
+                "apk_channel": apk_channel,
+                "apk_path": path,
+                "package_name": package_name  # 使用更新后的 package_name
+            })
+        else:
+            current_forms_data[device] = [{
+                "apk_channel": apk_channel,
+                "apk_path": path,
+                "package_name": package_name  # 使用更新后的 package_name
+            }]
+
+    # 更新或新增包名对应的数据
+    if current_package in data["data"]:
+        data["data"][current_package] = current_forms_data  # 直接覆盖旧数据
+    else:
+        data["data"][current_package] = current_forms_data
+
+    # 保存到 JSON 文件
+    with open(json_file_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+    print("数据已保存")
 
 def select_file(path_var):
     file_path = filedialog.askopenfilename()
     if file_path:
         path_var.set(file_path)
 
-
 def on_package_name_change(*args):
     # 当包名变化时调用的函数
     current_package = combo_value.get()
     load_forms_for_package(current_package)
-
 
 # 创建主窗口
 root = tk.Tk()
