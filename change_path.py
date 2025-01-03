@@ -13,20 +13,6 @@ def load_data():
 
 data = load_data()
 
-
-# def save_selection(value):
-#     # 更新 test_package_name 的值，并保存到 JSON 文件中
-#     data["data"]["test_package_name"] = value
-#     print(f"选择的包名: {value}")
-#
-#     # 如果包名不在现有列表中，添加到package_name_list
-#     if value not in data["config"]["package_name_list"]:
-#         data["config"]["package_name_list"].append(value)
-#
-#     with open(json_file_path, 'w', encoding='utf-8') as f:
-#         json.dump(data, f, ensure_ascii=False, indent=4)
-#     print("数据已保存")
-
 def save_selection(value):
     # 更新 test_package_name 的值，并保存到 JSON 文件中
     data["data"]["test_package_name"] = value
@@ -43,18 +29,27 @@ def save_selection(value):
         apk_channel = apk_channel_var.get()
         path = path_var.get()
 
+        # 根据 path 中的字段更新 package_name
+        package_name = value
+        if "xiaomi" in path.lower():
+            package_name = value + ".mi"
+        elif "vivo" in path.lower():
+            package_name = value + ".vivo"
+        elif "oppo" in path.lower():
+            package_name = value + ".oppo"
+
         # 如果序列号已经存在，追加到列表中，否则创建新列表
         if device in current_forms_data:
             current_forms_data[device].append({
                 "apk_channel": apk_channel,
                 "apk_path": path,
-                "package_name": value
+                "package_name": package_name  # 使用更新后的 package_name
             })
         else:
             current_forms_data[device] = [{
                 "apk_channel": apk_channel,
                 "apk_path": path,
-                "package_name": value
+                "package_name": package_name  # 使用更新后的 package_name
             }]
 
     # 更新或新增包名对应的数据
@@ -67,7 +62,6 @@ def save_selection(value):
     with open(json_file_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
     print("数据已保存")
-
 
 def load_forms_for_package(package_name):
     # 清除现有表单
@@ -146,7 +140,6 @@ combo_value.trace('w', on_package_name_change)
 
 package_name_combobox = ttk.Combobox(root, textvariable=combo_value, width=40)
 package_name_combobox['values'] = data["config"]["package_name_list"]
-# package_name_combobox.set(data["data"]["test_package_name"])
 package_name_combobox.grid(row=0, column=1, padx=10, pady=10)
 
 save_button = tk.Button(root, text="保存", command=lambda: save_selection(combo_value.get()))
@@ -156,9 +149,6 @@ save_button.grid(row=0, column=2, padx=10, pady=10)
 forms = []
 add_form_button = tk.Button(root, text="+", command=add_form)
 add_form_button.grid(row=0, column=3, columnspan=10, pady=10)
-
-# 初始化表单
-# load_forms_for_package(data["data"]["test_package_name"])
 
 # 运行主循环
 root.mainloop()
