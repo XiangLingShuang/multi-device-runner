@@ -1,10 +1,10 @@
 {
-    "start": 1735010205.8886836,
+    "start": 1735887375.2887259,
     "script": "start_app.air",
-    "log_dir_path": ".\\result\\2024_12_24_11_16_45",
+    "log_dir_path": ".\\result\\2025_01_03_14_56_15",
     "tests": {
         "h6xwqwkzqsa6onj7": {
-            "status": 0,
+            "status": 4294967295,
             "device_name": "redmi note 8 pro",
             "path": ".\\h6xwqwkzqsa6onj7\\log.html",
             "log_path": ".\\h6xwqwkzqsa6onj7\\log.txt"
