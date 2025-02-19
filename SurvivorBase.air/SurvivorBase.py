@@ -1,4 +1,8 @@
 import threading
+import logging
+
+logger = logging.getLogger("airtest")
+logger.setLevel(logging.ERROR)
 
 from airtest.core.api import *
 
@@ -103,6 +107,7 @@ def click_offline_ad_reward():
         log("点击离线广告奖励按钮")
         close_douyin_ad()
 
+
 # 原close_douyin_ad函数可改造为：
 def close_douyin_ad():
     close_btn = Template(r"close_ad_button.png", record_pos=(0.34, -0.944), resolution=(1264, 2780))
@@ -115,6 +120,7 @@ def close_douyin_ad():
         initial_wait=25
     )
     monitor()
+
 
 # def close_douyin_ad():
 #     """
@@ -211,10 +217,21 @@ def click_work_efficiency_ad():
 
 
 # 初始化 Airtest
-auto_setup(__file__)
+# auto_setup(__file__)
 
 # click_offline_reward()
 # click_offline_ad_reward()
 
-click_work_efficiency_ad()
-log("脚本运行结束")
+# click_work_efficiency_ad()
+# log("脚本运行结束")
+
+
+# SurvivorBase.air/SurvivorBase.py
+from airtest.core.api import connect_device
+
+# 连接到当前设备（自动选择首个连接设备）
+dev = connect_device("Android:///")
+save_path = dev.start_recording(output="test.mp4", orientation=1)
+sleep(10)
+dev.stop_recording()
+print(save_path)
