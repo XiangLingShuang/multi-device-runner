@@ -1,13 +1,13 @@
 {
-    "start": 1739876163.716261,
-    "script": "./SurvivorBase.air",
-    "log_dir_path": ".\\result\\2025_02_18_18_56_03",
+    "start": 1741763383.406428,
+    "script": "./resetting.air",
+    "log_dir_path": ".\\result\\2025_03_12_15_09_43",
     "tests": {
-        "ede2c3fd": {
-            "status": 0,
-            "device_name": "oneplus ace 3",
-            "path": ".\\ede2c3fd\\log.html",
-            "log_path": ".\\ede2c3fd\\log.txt"
+        "h6xwqwkzqsa6onj7": {
+            "status": 4294967295,
+            "device_name": "redmi note 8 pro",
+            "path": ".\\h6xwqwkzqsa6onj7\\log.html",
+            "log_path": ".\\h6xwqwkzqsa6onj7\\log.txt"
         }
     }
 }

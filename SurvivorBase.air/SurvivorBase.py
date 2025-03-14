@@ -1,8 +1,8 @@
 import threading
 import logging
 
-logger = logging.getLogger("airtest")
-logger.setLevel(logging.ERROR)
+# logger = logging.getLogger("airtest")
+# logger.setLevel(logging.ERROR)
 
 from airtest.core.api import *
 
@@ -85,8 +85,8 @@ def click_offline_reward():
     """
     点击离线奖励按钮
     """
-    offline_reward_button = Template(r"offline_reward_button.png", record_pos=(-0.241, 0.677), resolution=(1264, 2780))
-    offline_reward_interface = Template(r"offline_reward_interface.png", record_pos=(0.0, 0.0), resolution=(1264, 2780))
+    offline_reward_button = Template(r"Pictures/offline_reward_button.png", record_pos=(-0.241, 0.677), resolution=(1264, 2780))
+    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png", record_pos=(0.0, 0.0), resolution=(1264, 2780))
 
     if exists(offline_reward_interface):
         touch(offline_reward_button)
@@ -98,9 +98,9 @@ def click_offline_ad_reward():
     """
     点击离线广告奖励按钮
     """
-    offline_ad_reward_button = Template(r"offline_ad_reward_button.png", record_pos=(0.237, 0.679),
+    offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png", record_pos=(0.237, 0.679),
                                         resolution=(1264, 2780))
-    offline_reward_interface = Template(r"offline_reward_interface.png", record_pos=(0.0, 0.0), resolution=(1264, 2780))
+    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png", record_pos=(0.0, 0.0), resolution=(1264, 2780))
 
     if exists(offline_reward_interface):
         touch(offline_ad_reward_button)
@@ -110,8 +110,8 @@ def click_offline_ad_reward():
 
 # 原close_douyin_ad函数可改造为：
 def close_douyin_ad():
-    close_btn = Template(r"close_ad_button.png", record_pos=(0.34, -0.944), resolution=(1264, 2780))
-    back_btn = Template(r"back_ad_button.png", record_pos=(-0.422, -0.921), resolution=(1264, 2780))
+    close_btn = Template(r"Pictures/close_ad_button.png", record_pos=(0.34, -0.944), resolution=(1264, 2780))
+    back_btn = Template(r"Pictures/back_ad_button.png", record_pos=(-0.422, -0.921), resolution=(1264, 2780))
 
     monitor = create_button_monitor(
         main_template=close_btn,
@@ -186,8 +186,9 @@ def check_main_screen():
     代办：后续替换成下方全部截图，提高准确度
     '''
 
-    build_button = Template(r"build.png", record_pos=(0.001, 0.986), resolution=(1264, 2780))
-    if exists(build_button):
+    build_button = Template(r"Pictures/build.png", record_pos=(0.001, 0.986), resolution=(1264, 2780))
+    right_button  = Template(r"tpl1741337865294.png", record_pos=(0.435, 0.06), resolution=(1080, 2376))
+    if exists(build_button) and exists(right_button):
         log("进入主界面")
         return True
     else:
@@ -199,11 +200,11 @@ def click_work_efficiency_ad():
     """
     工作效率的广告领取按钮
     """
-    work_efficiency_entrance = Template(r"work_efficiency_entrance.png", record_pos=(0.406, -0.601),
+    work_efficiency_entrance = Template(r"Pictures/work_efficiency_entrance.png", record_pos=(0.406, -0.601),
                                         resolution=(1264, 2780))
-    diamond_increases_time = Template(r"diamond_increases_time.png", record_pos=(-0.236, 0.356),
+    diamond_increases_time = Template(r"Pictures/diamond_increases_time.png", record_pos=(-0.236, 0.356),
                                       resolution=(1264, 2780))
-    ad_increases_time = Template(r"ad_increases_time.png", record_pos=(0.237, 0.345), resolution=(1264, 2780))
+    ad_increases_time = Template(r"Pictures/ad_increases_time.png", record_pos=(0.237, 0.345), resolution=(1264, 2780))
 
     if check_main_screen():
         touch(work_efficiency_entrance)
@@ -216,22 +217,57 @@ def click_work_efficiency_ad():
         return
 
 
+def click_to_search():
+    """
+    点击搜寻按钮（主界面功能）
+    处理游戏中的幸存者搜寻流程，包含正常搜寻和广告搜寻两种路径
+    执行逻辑：
+    1. 检查是否在主界面
+    2. 进入搜寻界面并点击搜寻按钮
+    3. 根据是否存在广告按钮决定执行路径：
+       - 有广告按钮：点击广告并关闭后续弹窗
+       - 无广告按钮：关闭当前界面
+    :return: 无返回值
+    """
+    # 界面元素模板定义（分辨率1080x2376对应测试设备）
+    search_entrance = Template(r"Pictures/search_entrance.png", record_pos=(0.403, -0.467), resolution=(1080, 2376))  # 主界面入口按钮
+    search_button = Template(r"Pictures/search_button.png", record_pos=(0.003, 0.289), resolution=(1080, 2376))       # 普通搜寻按钮
+    search_ad_button = Template(r"Pictures/search_ad_button.png", record_pos=(0.0, 0.29), resolution=(1080, 2376))    # 广告立刻完成搜寻按钮
+    search_close_button = Template(r"Pictures/search_close_button.png", record_pos=(0.423, -0.363), resolution=(1080, 2376))  # 搜寻窗口关闭按钮
+
+    if check_main_screen():
+        # 进入搜寻界面并执行首次点击
+        touch(search_entrance)
+        touch(search_button)
+
+        # 判断广告按钮存在状态
+        if exists(search_button):
+            # 无可用广告时的处理
+            touch(search_close_button)
+            log("暂无幸存者需要搜寻")
+            return
+        else:
+            # 广告搜寻流程
+            touch(search_entrance)  # 重新进入确保界面状态
+            touch(search_ad_button)
+            close_douyin_ad()  # 处理广告关闭
+    else:
+        log("未进入主界面，无法点击搜寻按钮")
+        return
+
+
+
+
 # 初始化 Airtest
-# auto_setup(__file__)
+auto_setup(__file__,devices=["Android:///"])
 
 # click_offline_reward()
 # click_offline_ad_reward()
-
+#
 # click_work_efficiency_ad()
-# log("脚本运行结束")
+
+click_to_search()
+
+log("脚本运行结束")
 
 
-# SurvivorBase.air/SurvivorBase.py
-from airtest.core.api import connect_device
-
-# 连接到当前设备（自动选择首个连接设备）
-dev = connect_device("Android:///")
-save_path = dev.start_recording(output="test.mp4", orientation=1)
-sleep(10)
-dev.stop_recording()
-print(save_path)
