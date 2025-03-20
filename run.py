@@ -381,5 +381,8 @@ device_info_path = r'.\devices\device_info.xlsx'
 if __name__ == '__main__':
     devices_id_list = [tmp[0] for tmp in ADB().devices()]
     print(devices_id_list)
+    if len(devices_id_list) == 0:
+        print("未找到设备")
+        exit(0)
     air_folder = "SurvivorBase.air"
     run(devices_id_list, air_folder, run_all=True)

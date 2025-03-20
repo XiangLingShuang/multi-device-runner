@@ -37,9 +37,8 @@ def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait
         def main_monitor():
             sleep(initial_wait)
             while not global_stop.is_set():
-                main_template_coordinate = exists(main_template)
-                if main_template_coordinate:
-                    touch(main_template_coordinate)
+                if exists(main_template):
+                    touch(main_template)
                     global_stop.set()
                     break
                 sleep(1)
@@ -48,9 +47,9 @@ def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait
         def sub_monitor(template):
             sleep(initial_wait)
             while not global_stop.is_set() and not sub_stops[template].is_set():
-                template_coordinate = exists(template)
-                if template_coordinate:
-                    touch(template_coordinate)
+
+                if exists(template):
+                    touch(template)
                     sub_stops[template].set()
                     break
                 sleep(1)
@@ -86,9 +85,9 @@ def click_offline_reward():
     点击离线奖励按钮
     """
     offline_reward_button = Template(r"Pictures/offline_reward_button.png",
-                                     record_pos=(-0.241, 0.677),resolution=(1264, 2780), threshold=0.85)
+                                     record_pos=(-0.241, 0.677), resolution=(1264, 2780), threshold=0.85)
     offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
-                                        record_pos=(0.0, 0.0),resolution=(1264, 2780), threshold=0.85)
+                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
 
     if exists(offline_reward_interface):
         touch(offline_reward_button)
@@ -101,7 +100,7 @@ def click_offline_ad_reward():
     点击离线广告奖励按钮
     """
     offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png",
-                                        record_pos=(0.237, 0.679),resolution=(1264, 2780), threshold=0.85)
+                                        record_pos=(0.237, 0.679), resolution=(1264, 2780), threshold=0.85)
     offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
                                         record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
     try:
@@ -119,9 +118,9 @@ def click_offline_ad_reward():
 # 原close_douyin_ad函数可改造为：
 def close_douyin_ad():
     close_btn = Template(r"Pictures/close_ad_button.png",
-                         record_pos=(0.34, -0.944), resolution=(1264, 2780),threshold=0.85)
+                         record_pos=(0.34, -0.944), resolution=(1264, 2780), threshold=0.85)
     back_btn = Template(r"Pictures/back_ad_button.png",
-                        record_pos=(-0.422, -0.921), resolution=(1264, 2780),threshold=0.85)
+                        record_pos=(-0.422, -0.921), resolution=(1264, 2780), threshold=0.85)
 
     monitor = create_button_monitor(
         main_template=close_btn,
@@ -200,7 +199,9 @@ def check_main_screen():
                             record_pos=(0.001, 0.986), resolution=(1264, 2780), threshold=0.85)
     right_button = Template(r"Pictures/setting.png",
                             record_pos=(0.435, 0.06), resolution=(1080, 2376), threshold=0.85)
-    if exists(build_button) and exists(right_button):
+
+    wait(build_button)
+    if exists(right_button):
         log("进入主界面")
         return True
     else:
@@ -213,26 +214,32 @@ def click_work_efficiency_ad():
     工作效率的广告领取按钮
     """
     work_efficiency_entrance = Template(r"Pictures/work_efficiency_entrance.png",
-                                        record_pos=(0.406, -0.601),resolution=(1264, 2780), threshold=0.85)
+                                        record_pos=(0.406, -0.601), resolution=(1264, 2780), threshold=0.85)
     diamond_increases_time = Template(r"Pictures/diamond_increases_time.png",
-                                      record_pos=(-0.236, 0.356),resolution=(1264, 2780), threshold=0.85)
+                                      record_pos=(-0.236, 0.356), resolution=(1264, 2780), threshold=0.85)
     ad_increases_time = Template(r"Pictures/ad_increases_time.png",
-                                 record_pos=(0.237, 0.345), resolution=(1264, 2780),threshold=0.85)
-
+                                 record_pos=(0.237, 0.345), resolution=(1264, 2780), threshold=0.85)
+    close_button = Template(r"Pictures/close_button.png",
+                            record_pos=(0.428, -0.545), resolution=(1080, 2376), threshold=0.85)  # 弹窗关闭按钮
     try:
         if check_main_screen():
             touch(work_efficiency_entrance)
-            if exists(ad_increases_time):
-                touch(ad_increases_time)
+            ad_increases_time_pos = exists(diamond_increases_time)
+            if ad_increases_time_pos:
+                touch(ad_increases_time_pos)
                 close_douyin_ad()
             else:
                 log("未找到广告按钮")
+                close_button_pos = exists(close_button)
+                if close_button_pos:
+                    touch(close_button_pos)
                 return
         else:
             log("未进入主界面，无法点击工作效率的广告领取按钮")
             return
     except Exception as e:
         log(f"点击工作效率广告时发生错误: {str(e)}")
+
         return
 
 
@@ -265,11 +272,11 @@ def click_to_search():
             touch(search_button)
 
             # 判断广告按钮存在状态
+
             if exists(search_button):
                 # 无可用广告时的处理
                 touch(search_close_button)
                 log("暂无幸存者需要搜寻")
-                assert_equal(search_entrance, "暂无幸存者需要搜寻,并返回主界面")
             else:
                 # 广告搜寻流程
                 touch(search_entrance)  # 重新进入确保界面状态
@@ -379,7 +386,13 @@ def click_shop():
 
     try:
         if check_main_screen():
-            touch(shop_entrance)
+            # pos = (0.09,0.88)
+            # shop_entrance_pos = exists(shop_entrance)
+            shop_entrance_pos = False
+            if shop_entrance_pos:
+                touch(shop_entrance_pos)
+            else:
+                touch([0.09, 0.88])
             if exists(diamond_10):
                 touch(diamond_10)
                 close_douyin_ad()
@@ -401,22 +414,43 @@ def click_shop():
 
 
 def click_build():
-    pass
+    # 初始化UI元素模板
+    build_entrance = Template(filename=r"Pictures/build.png",
+                              record_pos=(0.001, 0.986), resolution=(1264, 2780), threshold=0.85)
+    build_close_button = Template(filename=r"Pictures/close_button.png",
+                                  record_pos=(0.436, -0.397), resolution=(1080, 2376), threshold=0.85)
+    build_button = Template(filename=r"build_button.png",
+                            record_pos=(0.356, 0.136), resolution=(1080, 2376), threshold=0.85)
+
+    try:
+        # 检查主界面状态
+        if check_main_screen():
+            # 点击建造入口
+            touch(build_entrance)
+            sleep(1)
+
+            # 检测建造按钮是否存在
+            if exists(build_button):
+                # 执行建造操作
+                touch(build_button)
+                touch([0.56, 0.56])  # 点击确认位置
+                log("建造成功")
+            else:
+                # 关闭建造界面
+                touch(build_close_button)
+    except Exception as e:
+        # 异常处理
+        log(f"建造功能执行出错: {str(e)}")
 
 
 if __name__ == "__main__":
     # 初始化设备
     auto_setup(__file__)
-    # auto_setup(__file__,devices=["Android:///"])
 
-    # click_offline_reward()
     click_offline_ad_reward()
-
     click_work_efficiency_ad()
-
     click_to_search()
-
     click_sign_in_reword()
-
     click_shop()
+    click_build()
     log("脚本运行结束")
