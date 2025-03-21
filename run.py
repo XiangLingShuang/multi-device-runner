@@ -8,7 +8,9 @@ import time
 import json
 
 import pandas as pd
+from airtest.core.android import Android
 from airtest.core.android.adb import ADB
+from airtest.core.api import device, connect_device
 from jinja2 import Environment, FileSystemLoader
 from my_lib.file_process import *
 
@@ -102,7 +104,17 @@ def run_on_multi_device(devices, air, results, run_all):
         # 为每个设备创建一个日志目录
         log_dir = create_device_folder(dev, results['log_dir_path'])
 
-        # 构造Airtest运行命令
+        # # 构造Airtest运行命令
+        # cmd = [
+        #     "airtest",
+        #     "run",
+        #     air,
+        #     "--device",
+        #     f"Android:///{dev}",
+        #     "--log",
+        #     log_dir,
+        #     "--recording"
+        # ]
         cmd = [
             "airtest",
             "run",
@@ -110,9 +122,13 @@ def run_on_multi_device(devices, air, results, run_all):
             "--device",
             f"Android:///{dev}",
             "--log",
-            log_dir,
-            "--recording"
+            log_dir
         ]
+        adb = ADB(serialno=dev)
+        android_version = int(adb.cmd(f"-s {dev} shell getprop ro.build.version.release"))
+        print(android_version,type(android_version))
+        if android_version not in [15]:
+            cmd.append('--recording')
 
         try:
             # 使用subprocess启动测试，并将任务添加到任务列表
@@ -369,7 +385,9 @@ device_info_path = r'.\devices\device_info.xlsx'
 
 if __name__ == '__main__':
     devices_id_list = [tmp[0] for tmp in ADB().devices()]
-    # air_folder = "tutorial.air"
-    # run(devices_id_list, air_folder, run_all=True)
-    air_folder = "./resetting.air"
+    print(devices_id_list)
+    if len(devices_id_list) == 0:
+        print("未找到设备")
+        exit(0)
+    air_folder = "SurvivorBase.air"
     run(devices_id_list, air_folder, run_all=True)
