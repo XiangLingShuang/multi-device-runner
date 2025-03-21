@@ -128,7 +128,7 @@ def run_on_multi_device(devices, air, results, run_all):
         android_version = int(adb.cmd(f"-s {dev} shell getprop ro.build.version.release"))
         print(android_version,type(android_version))
         if android_version not in [15]:
-            cmd.append('--logcat')
+            cmd.append('--recording')
 
         try:
             # 使用subprocess启动测试，并将任务添加到任务列表
