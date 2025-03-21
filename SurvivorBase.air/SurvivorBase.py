@@ -5,7 +5,6 @@ from airtest.core.android.adb import *
 from airtest.core.api import *
 
 
-
 # def touch_template(template, stop_thread):
 #     """
 #     通用的点击模板函数
@@ -80,6 +79,7 @@ def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait
 
     return monitor
 
+
 # 原close_douyin_ad函数可改造为：
 def close_douyin_ad():
     close_btn = Template(r"Pictures/close_ad_button.png",
@@ -152,7 +152,7 @@ def close_douyin_ad():
 #     back_thread.join(timeout=5)
 
 def close_weixin_ad():
-    close_btn = Template(r"tpl1742466843043.png", record_pos=(0.401, -0.957), resolution=(1440, 3200))
+    close_btn = Template(r"Pictures/weixin_ad_close.png", record_pos=(0.401, -0.957), resolution=(1440, 3200))
     monitor = create_button_monitor(
         main_template=close_btn,
         sub_templates=[],
@@ -161,8 +161,38 @@ def close_weixin_ad():
     )
     monitor()
 
+
+def check_app():
+    """
+    获取当前手机前台运行的应用包名
+    :return: 当前前台应用的包名（仅主包名），如果获取失败则返回 None
+    """
+    try:
+        # 获取当前前台应用包名和界面路径
+        current_app = device.get_top_activity_name()
+
+        # 提取主包名（分割斜杠前的部分）
+        package_name = current_app.split("/")[0]  # 关键修改点
+        log(f"当前前台应用包名: {package_name}")
+        return package_name
+    except Exception as e:
+        log(f"获取前台应用失败: {str(e)}")
+        return None
+
+
+def close_ad():
+    """
+    根据当前app选择关闭广告的方式
+    """
+    if PACKAGE_NAME == "com.tencent.mm":
+        close_weixin_ad()
+    elif PACKAGE_NAME == "com.ss.android.ugc.aweme":
+        close_douyin_ad()
+
+
 def close_weixin_popup():
     pass
+
 
 def click_offline_reward():
     """
@@ -191,15 +221,12 @@ def click_offline_ad_reward():
         if exists(offline_reward_interface):
             offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
             touch(offline_ad_reward_button_pos)
-            close_douyin_ad()
+            close_ad()
             log("点击离线奖励领取按钮")
     except AssertionError as e:
         log(f"断言错误: {str(e)}")
     except Exception as e:
         log(f"点击离线广告奖励按钮时发生错误: {str(e)}")
-
-
-
 
 
 def check_main_screen():
@@ -214,13 +241,18 @@ def check_main_screen():
                             record_pos=(0.001, 0.986), resolution=(1264, 2780), threshold=0.85)
     right_button = Template(r"Pictures/setting.png",
                             record_pos=(0.435, 0.06), resolution=(1080, 2376), threshold=0.85)
+    close_button = Template(r"Pictures/close_button.png",
+                            record_pos=(0.428, -0.545), resolution=(1080, 2376), threshold=0.85)  # 弹窗关闭按钮
 
-    wait(build_button)
+    wait(build_button,timeout=100)
     if exists(right_button):
         log("进入主界面")
         return True
     else:
         log("未进入主界面")
+        if exists(close_button):
+            touch(close_button)
+            check_main_screen()
         return False
 
 
@@ -239,10 +271,10 @@ def click_work_efficiency_ad():
     try:
         if check_main_screen():
             touch(work_efficiency_entrance)
-            ad_increases_time_pos = exists(diamond_increases_time)
+            ad_increases_time_pos = exists(ad_increases_time)
             if ad_increases_time_pos:
                 touch(ad_increases_time_pos)
-                close_douyin_ad()
+                close_ad()
             else:
                 log("未找到广告按钮")
                 close_button_pos = exists(close_button)
@@ -296,7 +328,7 @@ def click_to_search():
                 # 广告搜寻流程
                 touch(search_entrance)  # 重新进入确保界面状态
                 touch(search_ad_button)
-                close_douyin_ad()  # 处理广告关闭
+                close_ad()  # 处理广告关闭
         else:
             log("未进入主界面，无法点击搜寻按钮")
             return
@@ -358,7 +390,7 @@ def click_sign_in_reword():
             if supplementary_button_pos:
                 touch(supplementary_button_pos)
                 log("开始补签流程")
-                close_douyin_ad()  # 处理广告
+                close_ad()  # 处理广告
                 # 领取奖励
                 claim_button_pos = exists(claim_button)
                 if claim_button_pos:
@@ -410,7 +442,7 @@ def click_shop():
                 touch([0.09, 0.88])
             if exists(diamond_10):
                 touch(diamond_10)
-                close_douyin_ad()
+                close_ad()
                 if exists(claim_button):
                     touch(claim_button)
             else:
@@ -418,7 +450,7 @@ def click_shop():
 
             if exists(diamond_88):
                 touch(diamond_88)
-                close_douyin_ad()
+                close_ad()
                 if exists(claim_button):
                     touch(claim_button)
                     return
@@ -434,8 +466,11 @@ def click_build():
                               record_pos=(0.001, 0.986), resolution=(1264, 2780), threshold=0.85)
     build_close_button = Template(filename=r"Pictures/close_button.png",
                                   record_pos=(0.436, -0.397), resolution=(1080, 2376), threshold=0.85)
-    build_button = Template(filename=r"build_button.png",
+    build_button = Template(filename=r"Pictures/build_button.png",
                             record_pos=(0.356, 0.136), resolution=(1080, 2376), threshold=0.85)
+    confirm_button = Template(r"tpl1742539691366.png",
+                              record_pos=(-0.001, 0.122), resolution=(1440, 3200),target_pos= 6)
+
 
     try:
         # 检查主界面状态
@@ -448,7 +483,8 @@ def click_build():
             if exists(build_button):
                 # 执行建造操作
                 touch(build_button)
-                touch([0.56, 0.56])  # 点击确认位置
+                # touch([0.56, 0.56])  # 点击确认位置
+                touch(confirm_button)
                 log("建造成功")
             else:
                 # 关闭建造界面
@@ -458,33 +494,18 @@ def click_build():
         log(f"建造功能执行出错: {str(e)}")
 
 
-def check_app():
-    """
-    获取当前手机前台运行的应用包名
-    :return: 当前前台应用的包名，如果获取失败则返回 None
-    """
-    try:
-        # 获取当前前台应用包名
-        current_app = device.get_top_activity_name()
-        log(f"当前前台应用: {current_app}")
-        return current_app
-    except Exception as e:
-        log(f"获取前台应用失败: {str(e)}")
-        return None
-
 if __name__ == "__main__":
     # 初始化设备
     auto_setup(__file__)
     # connect_device("Android:///")
     device = device()
-    check_app()
+    PACKAGE_NAME = check_app()
 
-
-#     click_offline_ad_reward()
-#     click_work_efficiency_ad()
-#     click_to_search()
-#     click_sign_in_reword()
-#     click_shop()
-#     click_build()
-#     close_weixin_ad()
+    check_main_screen()
+    # click_offline_ad_reward()
+    # click_work_efficiency_ad()
+    # click_to_search()
+    # click_sign_in_reword()
+    # click_shop()
+    # click_build()
     log("脚本运行结束")
