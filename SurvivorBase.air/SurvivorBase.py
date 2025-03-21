@@ -5,17 +5,17 @@ from airtest.core.android.adb import ADB
 from airtest.core.api import *
 
 
-def touch_template(template, stop_thread):
-    """
-    通用的点击模板函数
-    :param template: Template对象，表示要点击的模板
-    :param stop_thread: threading.Event对象，用于控制线程的停止
-    """
-    while not stop_thread.is_set():
-        if exists(template):
-            touch(template)
-            break
-        sleep(2)  # 每2秒检查一次，减少CPU占用
+# def touch_template(template, stop_thread):
+#     """
+#     通用的点击模板函数
+#     :param template: Template对象，表示要点击的模板
+#     :param stop_thread: threading.Event对象，用于控制线程的停止
+#     """
+#     while not stop_thread.is_set():
+#         if exists(template):
+#             touch(template)
+#             break
+#         sleep(2)  # 每2秒检查一次，减少CPU占用
 
 
 def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait=0):
@@ -78,42 +78,6 @@ def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait
             t.join(timeout=5)
 
     return monitor
-
-
-def click_offline_reward():
-    """
-    点击离线奖励按钮
-    """
-    offline_reward_button = Template(r"Pictures/offline_reward_button.png",
-                                     record_pos=(-0.241, 0.677), resolution=(1264, 2780), threshold=0.85)
-    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
-                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
-
-    if exists(offline_reward_interface):
-        touch(offline_reward_button)
-        log("点击离线奖励领取按钮")
-        sleep(2)
-
-
-def click_offline_ad_reward():
-    """
-    点击离线广告奖励按钮
-    """
-    offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png",
-                                        record_pos=(0.237, 0.679), resolution=(1264, 2780), threshold=0.85)
-    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
-                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
-    try:
-        if exists(offline_reward_interface):
-            offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
-            touch(offline_ad_reward_button_pos)
-            close_douyin_ad()
-            log("点击离线奖励领取按钮")
-    except AssertionError as e:
-        log(f"断言错误: {str(e)}")
-    except Exception as e:
-        log(f"点击离线广告奖励按钮时发生错误: {str(e)}")
-
 
 # 原close_douyin_ad函数可改造为：
 def close_douyin_ad():
@@ -185,6 +149,53 @@ def close_douyin_ad():
 #     back_stop.set()
 #     close_thread.join(timeout=5)
 #     back_thread.join(timeout=5)
+
+def close_weixin_ad():
+    close_btn = Template(r"tpl1742466843043.png", record_pos=(0.401, -0.957), resolution=(1440, 3200))
+    monitor = create_button_monitor(
+        main_template=close_btn,
+        sub_templates=[],
+        timeout=60,
+        initial_wait=35
+    )
+    monitor()
+
+def click_offline_reward():
+    """
+    点击离线奖励按钮
+    """
+    offline_reward_button = Template(r"Pictures/offline_reward_button.png",
+                                     record_pos=(-0.241, 0.677), resolution=(1264, 2780), threshold=0.85)
+    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
+                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
+
+    if exists(offline_reward_interface):
+        touch(offline_reward_button)
+        log("点击离线奖励领取按钮")
+        sleep(2)
+
+
+def click_offline_ad_reward():
+    """
+    点击离线广告奖励按钮
+    """
+    offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png",
+                                        record_pos=(0.237, 0.679), resolution=(1264, 2780), threshold=0.85)
+    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
+                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
+    try:
+        if exists(offline_reward_interface):
+            offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
+            touch(offline_ad_reward_button_pos)
+            close_douyin_ad()
+            log("点击离线奖励领取按钮")
+    except AssertionError as e:
+        log(f"断言错误: {str(e)}")
+    except Exception as e:
+        log(f"点击离线广告奖励按钮时发生错误: {str(e)}")
+
+
+
 
 
 def check_main_screen():
@@ -447,10 +458,11 @@ if __name__ == "__main__":
     # 初始化设备
     auto_setup(__file__)
 
-    click_offline_ad_reward()
-    click_work_efficiency_ad()
-    click_to_search()
-    click_sign_in_reword()
-    click_shop()
-    click_build()
+#     click_offline_ad_reward()
+#     click_work_efficiency_ad()
+#     click_to_search()
+#     click_sign_in_reword()
+#     click_shop()
+#     click_build()
+    close_weixin_ad()
     log("脚本运行结束")
