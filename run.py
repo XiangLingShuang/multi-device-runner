@@ -8,7 +8,9 @@ import time
 import json
 
 import pandas as pd
+from airtest.core.android import Android
 from airtest.core.android.adb import ADB
+from airtest.core.api import device, connect_device
 from jinja2 import Environment, FileSystemLoader
 from my_lib.file_process import *
 
@@ -122,8 +124,11 @@ def run_on_multi_device(devices, air, results, run_all):
             "--log",
             log_dir
         ]
-        if dev != "ede2c3fd":  # 添加条件判断
-            cmd.append("--recording")  # 仅非指定设备添加该参数
+        adb = ADB(serialno=dev)
+        android_version = int(adb.cmd(f"-s {dev} shell getprop ro.build.version.release"))
+        print(android_version,type(android_version))
+        if android_version not in [15]:
+            cmd.append('--logcat')
 
         try:
             # 使用subprocess启动测试，并将任务添加到任务列表

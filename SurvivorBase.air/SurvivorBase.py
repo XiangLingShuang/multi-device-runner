@@ -1,8 +1,9 @@
 import threading
 
-from airtest.core.android import Android, android
-from airtest.core.android.adb import ADB
+from airtest.core.android import *
+from airtest.core.android.adb import *
 from airtest.core.api import *
+
 
 
 # def touch_template(template, stop_thread):
@@ -159,6 +160,9 @@ def close_weixin_ad():
         initial_wait=35
     )
     monitor()
+
+def close_weixin_popup():
+    pass
 
 def click_offline_reward():
     """
@@ -454,9 +458,27 @@ def click_build():
         log(f"建造功能执行出错: {str(e)}")
 
 
+def check_app():
+    """
+    获取当前手机前台运行的应用包名
+    :return: 当前前台应用的包名，如果获取失败则返回 None
+    """
+    try:
+        # 获取当前前台应用包名
+        current_app = device.get_top_activity_name()
+        log(f"当前前台应用: {current_app}")
+        return current_app
+    except Exception as e:
+        log(f"获取前台应用失败: {str(e)}")
+        return None
+
 if __name__ == "__main__":
     # 初始化设备
     auto_setup(__file__)
+    # connect_device("Android:///")
+    device = device()
+    check_app()
+
 
 #     click_offline_ad_reward()
 #     click_work_efficiency_ad()
@@ -464,5 +486,5 @@ if __name__ == "__main__":
 #     click_sign_in_reword()
 #     click_shop()
 #     click_build()
-    close_weixin_ad()
+#     close_weixin_ad()
     log("脚本运行结束")
