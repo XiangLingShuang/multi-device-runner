@@ -1,86 +1,20 @@
+# -*- encoding=utf8 -*-
 import threading
-
 from airtest.core.android import *
 from airtest.core.android.adb import *
 from airtest.core.api import *
 
-
-# def touch_template(template, stop_thread):
-#     """
-#     通用的点击模板函数
-#     :param template: Template对象，表示要点击的模板
-#     :param stop_thread: threading.Event对象，用于控制线程的停止
-#     """
-#     while not stop_thread.is_set():
-#         if exists(template):
-#             touch(template)
-#             break
-#         sleep(2)  # 每2秒检查一次，减少CPU占用
+# 获取当前脚本的绝对路径并解析符号链接
+script_path = os.path.realpath(__file__)
+# 获取脚本所在目录
+current_dir = os.path.dirname(script_path)
+# 获取上级目录作为项目根目录
+project_root = os.path.dirname(current_dir)
+print(f"项目根目录: {project_root}")
+sys.path.append(project_root)
+from my_lib.common import create_button_monitor
 
 
-def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait=0):
-    """
-    创建通用按钮监控器
-    :param main_template: 主按钮模板（点击后停止所有线程）
-    :param sub_templates: 子按钮模板列表（点击后仅停止自己线程）
-    :param timeout: 总超时时间（秒）
-    :param initial_wait: 初始等待时间（秒）
-    :return: 执行监控的函数
-    """
-
-    def monitor():
-        # 事件控制
-        global_stop = threading.Event()
-        sub_stops = {template: threading.Event() for template in sub_templates}
-
-        # 主按钮监控
-        def main_monitor():
-            sleep(initial_wait)
-            while not global_stop.is_set():
-                if exists(main_template):
-                    touch(main_template)
-                    global_stop.set()
-                    break
-                sleep(1)
-
-        # 子按钮监控
-        def sub_monitor(template):
-            sleep(initial_wait)
-            while not global_stop.is_set() and not sub_stops[template].is_set():
-
-                if exists(template):
-                    touch(template)
-                    sub_stops[template].set()
-                    break
-                sleep(1)
-
-        # 启动线程
-        main_thread = threading.Thread(target=main_monitor)
-        sub_threads = [threading.Thread(target=sub_monitor, args=(t,)) for t in sub_templates]
-
-        main_thread.start()
-        for t in sub_threads:
-            t.start()
-
-        # 超时控制
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            if global_stop.is_set():
-                break
-            sleep(1)
-
-        # 清理资源
-        global_stop.set()
-        for stop in sub_stops.values():
-            stop.set()
-        main_thread.join(timeout=5)
-        for t in sub_threads:
-            t.join(timeout=5)
-
-    return monitor
-
-
-# 原close_douyin_ad函数可改造为：
 def close_douyin_ad():
     close_btn = Template(r"Pictures/close_ad_button.png",
                          record_pos=(0.34, -0.944), resolution=(1264, 2780), threshold=0.85)
@@ -94,62 +28,6 @@ def close_douyin_ad():
         initial_wait=25
     )
     monitor()
-
-
-# def close_douyin_ad():
-#     """
-#     抖音广告关闭优化方案（精确控制版）
-#     1. 关闭按钮线程拥有最高优先级，点击后终止所有监控
-#     2. 返回按钮线程独立运行，点击后仅终止自己
-#     3. 主线程设置总超时时间
-#     """
-#     # 模板定义
-#     close_btn = Template(r"close_ad_button.png", record_pos=(0.34, -0.944), resolution=(1264, 2780))
-#     back_btn = Template(r"back_ad_button.png", record_pos=(-0.422, -0.921), resolution=(1264, 2780))
-#
-#     # 事件控制
-#     global_stop = threading.Event()  # 全局停止信号
-#     back_stop = threading.Event()  # 返回按钮专用停止信号
-#
-#     def monitor_close():
-#         """ 关闭按钮监控线程 """
-#         while not global_stop.is_set():
-#             if exists(close_btn):
-#                 touch(close_btn)
-#                 global_stop.set()  # 触发全局停止
-#                 break
-#             sleep(1)
-#
-#     def monitor_back():
-#         """ 返回按钮监控线程 """
-#         while not global_stop.is_set() and not back_stop.is_set():
-#             if exists(back_btn):
-#                 touch(back_btn)
-#                 back_stop.set()  # 仅停止本线程
-#                 break
-#             sleep(1)
-#
-#     # 启动监控
-#     sleep(25)  # 25秒后开始监控（总30秒广告-5秒缓冲）
-#
-#     close_thread = threading.Thread(target=monitor_close)
-#     back_thread = threading.Thread(target=monitor_back)
-#
-#     close_thread.start()
-#     back_thread.start()
-#
-#     # 设置总超时（最长等待60秒）
-#     start_time = time.time()
-#     while time.time() - start_time < 60:
-#         if global_stop.is_set():
-#             break
-#         sleep(1)
-#
-#     # 最终清理
-#     global_stop.set()
-#     back_stop.set()
-#     close_thread.join(timeout=5)
-#     back_thread.join(timeout=5)
 
 def close_weixin_ad():
     close_btn = Template(r"Pictures/weixin_ad_close.png", record_pos=(0.401, -0.957), resolution=(1440, 3200))
@@ -190,8 +68,49 @@ def close_ad():
         close_douyin_ad()
 
 
-def close_weixin_popup():
+def weixin_popup_monitor(timeout=400):
+    """
+    持续监控微信弹窗的守护线程
+    :param timeout: 超时时间（秒），None表示不限时
+    发现弹窗立即点击关闭，超时或成功后自动终止线程
+    """
+    stop_event = threading.Event()
+    popup = Template(r"Pictures/weixin_popup.png", record_pos=(0.002, -0.002), resolution=(1440, 3200))
+
+    def _monitor():
+        start_time = time.time()
+        while not stop_event.is_set():
+            # 超时检测
+            if timeout and (time.time() - start_time > timeout):
+                log("弹窗监控已超时")
+                stop_event.set()
+                break
+
+            if exists(popup):
+                touch([0.72, 0.76])
+                log("检测到弹窗并已关闭")
+                stop_event.set()  # 触发停止信号
+                break
+            sleep(1)
+
+    # 启动守护线程
+    monitor_thread = threading.Thread(target=_monitor, daemon=True)
+    monitor_thread.start()
+    return stop_event
+
+
+
+def douyin_popup_monitor():
     pass
+
+def click_popup():
+    """
+    根据当前app选择关闭广告的方式
+    """
+    if PACKAGE_NAME == "com.tencent.mm":
+        weixin_popup_monitor()
+    elif PACKAGE_NAME == "com.ss.android.ugc.aweme":
+        douyin_popup_monitor()
 
 
 def click_offline_reward():
@@ -217,16 +136,11 @@ def click_offline_ad_reward():
                                         record_pos=(0.237, 0.679), resolution=(1264, 2780), threshold=0.85)
     offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
                                         record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
-    try:
-        if exists(offline_reward_interface):
-            offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
-            touch(offline_ad_reward_button_pos)
-            close_ad()
-            log("点击离线奖励领取按钮")
-    except AssertionError as e:
-        log(f"断言错误: {str(e)}")
-    except Exception as e:
-        log(f"点击离线广告奖励按钮时发生错误: {str(e)}")
+    if exists(offline_reward_interface):
+        offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
+        touch(offline_ad_reward_button_pos)
+        close_ad()
+        log("点击离线奖励领取按钮")
 
 
 def check_main_screen():
@@ -468,8 +382,8 @@ def click_build():
                                   record_pos=(0.436, -0.397), resolution=(1080, 2376), threshold=0.85)
     build_button = Template(filename=r"Pictures/build_button.png",
                             record_pos=(0.356, 0.136), resolution=(1080, 2376), threshold=0.85)
-    confirm_button = Template(r"tpl1742539691366.png",
-                              record_pos=(-0.001, 0.122), resolution=(1440, 3200),target_pos= 6)
+    confirm_button = Template(r"Pictures/confirm_button.png",
+                              record_pos=(-0.001, 0.122), resolution=(1440, 3200), target_pos= 6)
 
 
     try:
@@ -493,19 +407,21 @@ def click_build():
         # 异常处理
         log(f"建造功能执行出错: {str(e)}")
 
+        
 
 if __name__ == "__main__":
     # 初始化设备
     auto_setup(__file__)
-    # connect_device("Android:///")
+    connect_device("Android:///")
     device = device()
     PACKAGE_NAME = check_app()
 
-    check_main_screen()
-    # click_offline_ad_reward()
-    # click_work_efficiency_ad()
-    # click_to_search()
-    # click_sign_in_reword()
-    # click_shop()
     # click_build()
+    click_popup()
+    click_offline_ad_reward()
+    click_work_efficiency_ad()
+    click_to_search()
+    click_sign_in_reword()
+    click_shop()
     log("脚本运行结束")
+
