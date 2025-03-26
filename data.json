@@ -1,13 +1,13 @@
 {
-    "start": 1742437777.0778043,
-    "script": "SurvivorBase.air",
-    "log_dir_path": ".\\result\\2025_03_20_10_29_37",
+    "start": 1742548939.3124623,
+    "script": "Survivor IslandsDY.air",
+    "log_dir_path": ".\\result\\2025_03_21_17_22_19",
     "tests": {
-        "ede2c3fd": {
-            "status": 0,
-            "device_name": "oneplus ace 3",
-            "path": ".\\ede2c3fd\\log.html",
-            "log_path": ".\\ede2c3fd\\log.txt"
+        "10AD9T23YS002PJ": {
+            "status": 4294967295,
+            "device_name": "iqoo Z7i",
+            "path": ".\\10AD9T23YS002PJ\\log.html",
+            "log_path": ".\\10AD9T23YS002PJ\\log.txt"
         }
     }
 }
