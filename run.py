@@ -34,12 +34,12 @@ def run(devices, air, run_all=False):
             # 等待每个测试任务完成
             status = task['process'].wait()
 
-            # # 生成单个设备的测试报告，并更新测试状态
-            # results['tests'][task['dev']] = run_one_report(task['air'], task)
-            # results['tests'][task['dev']]['status'] = status
-            #
-            # # 将当前的测试结果保存到data.json文件
-            # json.dump(results, open('data.json', "w"), indent=4)
+            # 生成单个设备的测试报告，并更新测试状态
+            results['tests'][task['dev']] = run_one_report(task['air'], task)
+            results['tests'][task['dev']]['status'] = status
+
+            # 将当前的测试结果保存到data.json文件
+            json.dump(results, open('data.json', "w"), indent=4)
 
         # 生成所有测试的汇总报告
         run_summary(results)
@@ -389,5 +389,5 @@ if __name__ == '__main__':
     if len(devices_id_list) == 0:
         print("未找到设备")
         exit(0)
-    air_folder = "Survivor IslandsDY.air"
+    air_folder = "SurvivorBase.air"
     run(devices_id_list, air_folder, run_all=True)
