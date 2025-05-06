@@ -139,8 +139,8 @@ def set_project_root():
 #     3. 主线程设置总超时时间
 #     """
 #     # 模板定义
-#     close_btn = Template(r"close_ad_button.png", record_pos=(0.34, -0.944), resolution=(1264, 2780))
-#     back_btn = Template(r"back_ad_button.png", record_pos=(-0.422, -0.921), resolution=(1264, 2780))
+#     close_btn = Template(r"douyin_ad_close.png", record_pos=(0.34, -0.944), resolution=(1264, 2780))
+#     back_btn = Template(r"douyin_ad_back.png", record_pos=(-0.422, -0.921), resolution=(1264, 2780))
 #
 #     # 事件控制
 #     global_stop = threading.Event()  # 全局停止信号

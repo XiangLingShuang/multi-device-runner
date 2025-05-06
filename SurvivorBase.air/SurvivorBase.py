@@ -414,12 +414,13 @@ if __name__ == "__main__":
     device = device()
     PACKAGE_NAME = check_app()
 
-    # click_build()
+
+    click_build()
     click_popup()
     click_offline_ad_reward()
     click_work_efficiency_ad()
-    # click_to_search()
-    # click_sign_in_reword()
-    # click_shop()
+    click_to_search()
+    click_sign_in_reword()
+    click_shop()
     log("脚本运行结束")
 
