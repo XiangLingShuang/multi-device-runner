@@ -1,5 +1,6 @@
+import sys
 import threading
-
+from airtest.core.android.adb import *
 from airtest.core.api import *
 
 
@@ -28,55 +29,107 @@ def create_button_monitor(main_template, sub_templates, timeout=60, initial_wait
     """
 
     def monitor():
-        # 事件控制
+        # 1. 初始化线程控制事件
+        # 全局停止事件，用于控制所有线程
         global_stop = threading.Event()
+        # 为每个子模板创建独立停止事件
         sub_stops = {template: threading.Event() for template in sub_templates}
 
-        # 主按钮监控
+        # 2. 定义主按钮监控线程函数
         def main_monitor():
+            # 等待初始延迟
             sleep(initial_wait)
+            # 持续监控直到全局停止
             while not global_stop.is_set():
+                # 检查主按钮是否存在
                 if exists(main_template):
+                    # 点击主按钮并设置全局停止
                     touch(main_template)
                     global_stop.set()
                     break
-                # sleep(1)
+                # 注释掉的sleep(1)可根据需要取消注释以降低CPU使用率
 
-        # 子按钮监控
+        # 3. 定义子按钮监控线程函数
         def sub_monitor(template):
+            # 等待初始延迟
             sleep(initial_wait)
+            # 持续监控直到全局停止或本线程被停止
             while not global_stop.is_set() and not sub_stops[template].is_set():
-
+                # 检查子按钮是否存在
                 if exists(template):
+                    # 点击子按钮并设置本线程停止
                     touch(template)
                     sub_stops[template].set()
                     break
-                # sleep(1)
+                # 注释掉的sleep(1)可根据需要取消注释以降低CPU使用率
 
-        # 启动线程
+        # 4. 启动所有监控线程
+        # 创建并启动主按钮监控线程
         main_thread = threading.Thread(target=main_monitor)
+        # 为每个子模板创建并启动监控线程
         sub_threads = [threading.Thread(target=sub_monitor, args=(t,)) for t in sub_templates]
 
         main_thread.start()
         for t in sub_threads:
             t.start()
 
-        # 超时控制
+        # 5. 超时控制逻辑
         start_time = time.time()
         while time.time() - start_time < timeout:
+            # 如果全局已停止则提前退出
             if global_stop.is_set():
                 break
-            sleep(1)
+            sleep(1)  # 每秒检查一次
 
-        # 清理资源
+        # 6. 清理资源
+        # 设置全局停止标志
         global_stop.set()
+        # 设置所有子线程停止标志
         for stop in sub_stops.values():
             stop.set()
+        # 等待主线程结束（最多5秒）
         main_thread.join(timeout=5)
+        # 等待所有子线程结束（最多5秒）
         for t in sub_threads:
             t.join(timeout=5)
 
     return monitor
+
+
+def set_project_root():
+    """自动设置项目根目录并添加到Python模块搜索路径。
+
+    该函数通过以下步骤确定项目根目录：
+    1. 获取当前脚本的绝对路径（解析符号链接）
+    2. 获取脚本所在目录
+    3. 获取上级目录作为项目根目录
+    4. 将项目根目录添加到sys.path中
+
+    使用示例:
+        set_project_root()
+        # 之后可以直接导入项目根目录下的模块
+
+    注意:
+        - 该函数假设项目根目录是当前脚本所在目录的上级目录
+        - 调用后会打印出项目根目录路径
+    """
+    # 获取当前脚本的绝对路径并解析符号链接
+    script_path = os.path.realpath(__file__)
+    # 获取脚本所在目录
+    current_dir = os.path.dirname(script_path)
+    # 获取上级目录作为项目根目录
+    project_root = os.path.dirname(current_dir)
+    print(f"项目根目录: {project_root}")
+    sys.path.append(project_root)
+
+
+
+
+
+
+
+
+
 
 # def close_douyin_ad():
 #     """

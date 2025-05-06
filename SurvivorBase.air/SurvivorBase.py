@@ -1,6 +1,4 @@
 # -*- encoding=utf8 -*-
-import threading
-from airtest.core.android import *
 from airtest.core.android.adb import *
 from airtest.core.api import *
 
@@ -135,7 +133,7 @@ def click_offline_ad_reward():
     offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png",
                                         record_pos=(0.237, 0.679), resolution=(1264, 2780), threshold=0.85)
     offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
-                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.85)
+                                        record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.75)
     if exists(offline_reward_interface):
         offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
         touch(offline_ad_reward_button_pos)
@@ -420,8 +418,8 @@ if __name__ == "__main__":
     click_popup()
     click_offline_ad_reward()
     click_work_efficiency_ad()
-    click_to_search()
-    click_sign_in_reword()
-    click_shop()
+    # click_to_search()
+    # click_sign_in_reword()
+    # click_shop()
     log("脚本运行结束")
 
