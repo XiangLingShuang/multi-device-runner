@@ -97,8 +97,10 @@ def weixin_popup_monitor(timeout=400):
         - 返回的stop_event可用于外部控制线程终止
         - 线程设置为daemon模式，主线程退出时会自动终止
     """
+    print("weixin_popup_monitor")
     stop_event = threading.Event()
     popup = Template(r"Pictures/weixin_popup.png", record_pos=(0.002, -0.002), resolution=(1440, 3200))
+    popup_confirm = Template(r"tpl1746512224460.png", record_pos=(0.222, 0.463), resolution=(1440, 3200))
 
     def _monitor():
         start_time = time.time()
@@ -110,10 +112,11 @@ def weixin_popup_monitor(timeout=400):
                 break
 
             if exists(popup):
-                touch([0.72, 0.76])
-                log("检测到弹窗并已关闭")
+                touch(popup_confirm)
                 stop_event.set()  # 触发停止信号
                 break
+            else:
+                log("检测到弹窗并已关闭")
             sleep(1)
 
     # 启动守护线程
@@ -234,8 +237,31 @@ def close_weixin_ad():
     )
     monitor()
 
+
+
+def click_offline_ad_reward():
+    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png", record_pos=(0.011, -0.001), resolution=(1440, 3200))
+    offline_continue_button = Template(r"Pictures/offline_continue_button.png", record_pos=(-0.001, 0.776), resolution=(1440, 3200))
+    offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png", record_pos=(-0.007, -0.15), resolution=(1440, 3200))
+
+    if exists(offline_reward_interface):
+        offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
+        touch(offline_ad_reward_button_pos)
+        close_ad()
+        touch(offline_continue_button)
+        log("点击离线奖励领取按钮")
+
+
+    
+        
+
 def check_main_screen():
-    pass
+    shop_task = Template(r"tpl1746513643908.png", record_pos=(-0.403, 0.943), resolution=(1440, 3200))
+    close_button = Template(r"tpl1746513656988.png", record_pos=(0.381, -0.313), resolution=(1440, 3200))
+    if exists(shop_task) and not exists(close_button):
+        return True
+    else:
+        return False
 
 
 
@@ -244,9 +270,20 @@ def check_main_screen():
 if __name__ == "__main__":
     set_project_root()
 
+
     # 初始化设备
     auto_setup(__file__)
     connect_device("Android:///")
     device = device()
     PACKAGE_NAME = check_app()
+
+    click_popup()
+
+    click_offline_ad_reward()
+
+    print(check_main_screen())
+
+ 
+
+
 

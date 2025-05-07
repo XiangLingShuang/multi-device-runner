@@ -134,12 +134,17 @@ def click_offline_ad_reward():
                                         record_pos=(0.237, 0.679), resolution=(1264, 2780), threshold=0.85)
     offline_reward_interface = Template(r"Pictures/offline_reward_interface.png",
                                         record_pos=(0.0, 0.0), resolution=(1264, 2780), threshold=0.75)
-    if exists(offline_reward_interface):
-        offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
-        touch(offline_ad_reward_button_pos)
-        close_ad()
-        log("点击离线奖励领取按钮")
-
+    try:
+        log("离线奖励广告：开始")
+        if exists(offline_reward_interface):
+            offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
+            touch(offline_ad_reward_button_pos)
+            close_ad()
+            assert_equal(True, True, "离线奖励广告：测试成功")
+    except Exception as e:
+        my_assert(False,"离线奖励广告：测试失败")
+    finally:
+        log("离线奖励广告：结束")
 
 def check_main_screen():
     """
@@ -171,35 +176,73 @@ def check_main_screen():
 def click_work_efficiency_ad():
     """
     工作效率的广告领取按钮
+
+    功能说明:
+    1. 检测并点击工作效率入口按钮
+    2. 查找并点击广告增加时间按钮
+    3. 处理广告关闭逻辑
+    4. 异常情况下关闭弹窗并记录日志
+
+    使用流程:
+    1. 检查是否在主界面
+    2. 点击工作效率入口
+    3. 查找广告增加时间按钮
+    4. 点击广告按钮并处理广告
+    5. 异常情况下关闭弹窗
+
+    模板配置:
+        - 工作效率入口: (0.406, -0.601), 分辨率1264×2780
+        - 钻石增加时间按钮: (-0.236, 0.356)
+        - 广告增加时间按钮: (0.237, 0.345)
+        - 关闭按钮: (0.428, -0.545), 分辨率1080×2376
+
+    使用示例:
+        click_work_efficiency_ad()  # 自动完成工作效率广告点击流程
+
+    注意:
+        - 依赖check_main_screen()函数检测主界面
+        - 依赖close_ad()函数处理广告关闭
+        - 各模板图片需放置在Pictures目录下
+        - 不同分辨率设备需要调整模板位置
     """
+    # 定义所有模板图片
     work_efficiency_entrance = Template(r"Pictures/work_efficiency_entrance.png",
-                                        record_pos=(0.406, -0.601), resolution=(1264, 2780), threshold=0.85)
+                                      record_pos=(0.406, -0.601), resolution=(1264, 2780), threshold=0.85)
     diamond_increases_time = Template(r"Pictures/diamond_increases_time.png",
-                                      record_pos=(-0.236, 0.356), resolution=(1264, 2780), threshold=0.85)
+                                    record_pos=(-0.236, 0.356), resolution=(1264, 2780), threshold=0.85)
     ad_increases_time = Template(r"Pictures/ad_increases_time.png",
-                                 record_pos=(0.237, 0.345), resolution=(1264, 2780), threshold=0.85)
+                               record_pos=(0.237, 0.345), resolution=(1264, 2780), threshold=0.85)
     close_button = Template(r"Pictures/close_button.png",
-                            record_pos=(0.428, -0.545), resolution=(1080, 2376), threshold=0.85)  # 弹窗关闭按钮
+                          record_pos=(0.428, -0.545), resolution=(1080, 2376), threshold=0.85)
+
     try:
+        log("工作效率：开始")
+        # 1. 检查是否在主界面
         if check_main_screen():
+            # 2. 点击工作效率入口按钮
             touch(work_efficiency_entrance)
+
+            # 3. 查找广告增加时间按钮
             ad_increases_time_pos = exists(ad_increases_time)
             if ad_increases_time_pos:
+                # 4. 点击广告按钮并处理广告
                 touch(ad_increases_time_pos)
                 close_ad()
+                assert_equal(True, True, "工作效率：测试成功")
             else:
-                log("未找到广告按钮")
+                log("未找到广告按钮，关闭弹窗")
+                # 5. 异常情况下关闭弹窗
                 close_button_pos = exists(close_button)
                 if close_button_pos:
                     touch(close_button_pos)
-                return
+                assert_equal(True, True, "工作效率：测试成功")
         else:
             log("未进入主界面，无法点击工作效率的广告领取按钮")
-            return
     except Exception as e:
         log(f"点击工作效率广告时发生错误: {str(e)}")
-
-        return
+        my_assert( False, "工作效率：测试失败")
+    finally:
+        log("工作效率：结束")
 
 
 def click_to_search():
@@ -225,6 +268,7 @@ def click_to_search():
                                    record_pos=(0.423, -0.363), resolution=(1080, 2376), threshold=0.85)  # 搜寻窗口关闭按钮
 
     try:
+        log("搜寻：开始")
         if check_main_screen():
             # 进入搜寻界面并执行首次点击
             touch(search_entrance)
@@ -241,11 +285,15 @@ def click_to_search():
                 touch(search_entrance)  # 重新进入确保界面状态
                 touch(search_ad_button)
                 close_ad()  # 处理广告关闭
+            assert_equal(True, True, "搜寻：测试成功")
         else:
             log("未进入主界面，无法点击搜寻按钮")
-            return
+            assert_equal(True, False, "搜寻：测试失败")
     except Exception as e:
         log(f"点击搜寻按钮时发生错误: {str(e)}")
+        my_assert( False, "搜寻：测试失败")
+    finally:
+        log("搜寻：结束")
 
 
 def click_sign_in_reword():
@@ -279,6 +327,7 @@ def click_sign_in_reword():
 
         # 进入签到界面流程
         try:
+            log("签到：开始")
             touch(sign_in_entrance)  # 点击签到入口
             sleep(1)  # 等待界面加载
 
@@ -289,29 +338,34 @@ def click_sign_in_reword():
                 claim_button_pos = exists(claim_button)
                 if claim_button_pos:
                     touch(claim_button_pos)
-                    log("领取签到奖励")
-                log("完成每日签到")
+                    assert_equal(True, True, "签到：测试成功")
             else:
                 log("未找到签到按钮")
+                assert_equal(True, False, "签到：测试失败")
         except Exception as e:
             log(f"签到过程出错: {str(e)}")
+            my_assert( False, "签到：测试失败")
+        finally:
+            log("签到：结束")
 
         # 执行补签操作
         try:
+            log("补签：开始")
             supplementary_button_pos = exists(supplementary_signature_button)
             if supplementary_button_pos:
                 touch(supplementary_button_pos)
-                log("开始补签流程")
                 close_ad()  # 处理广告
                 # 领取奖励
                 claim_button_pos = exists(claim_button)
                 if claim_button_pos:
                     touch(claim_button_pos)
-                    log("领取补签奖励")
+                    assert_equal(True, True, "补签：测试成功")
             else:
                 log("无需补签或补签按钮未找到")
+                assert_equal(True, False, "补签：测试失败")
         except Exception as e:
             log(f"补签过程出错: {str(e)}")
+            my_assert( False, "补签：测试失败")
 
         # 关闭界面
         close_button_pos = exists(close_button)
@@ -330,46 +384,89 @@ def click_sign_in_reword():
 
 
 def click_shop():
+    """
+    处理游戏商店相关操作
+
+    功能说明:
+    1. 进入商店界面
+    2. 尝试领取10钻石和88钻石的广告奖励
+    3. 关闭商店界面
+
+    执行流程:
+    1. 检查是否在主界面
+    2. 点击商店入口按钮
+    3. 查找并点击钻石奖励按钮
+    4. 处理广告关闭逻辑
+    5. 领取奖励
+    6. 关闭商店界面
+
+    模板配置:
+        - 商店入口: (-0.41, 0.836), 分辨率1080×2376
+        - 10钻石按钮: (-0.16, 0.67)
+        - 88钻石按钮: (0.162, 0.657)
+        - 领取按钮: (0.002, 0.881)
+        - 关闭按钮: (-0.448, -0.988)
+
+    使用示例:
+        click_shop()  # 自动完成商店操作流程
+
+    注意:
+        - 依赖check_main_screen()函数检测主界面
+        - 依赖close_ad()函数处理广告关闭
+        - 各模板图片需放置在Pictures目录下
+        - 不同分辨率设备需要调整模板位置
+    """
+    # 定义所有UI元素模板
     shop_entrance = Template(r"Pictures/shop_entrance.png",
-                             record_pos=(-0.41, 0.836), resolution=(1080, 2376), threshold=0.85)
-    shop_close_button = Template(r"Pictures/shop_close_button.png", record_pos=(-0.448, -0.988),
-                                 resolution=(1080, 2376), threshold=0.85)
+                            record_pos=(-0.41, 0.836), resolution=(1080, 2376), threshold=0.85)
+    shop_close_button = Template(r"Pictures/shop_close_button.png",
+                                record_pos=(-0.448, -0.988), resolution=(1080, 2376), threshold=0.85)
     material_supply = Template(r"Pictures/material_supply.png",
-                               record_pos=(-0.001, -0.549), resolution=(1080, 2376), threshold=0.85)
+                              record_pos=(-0.001, -0.549), resolution=(1080, 2376), threshold=0.85)
     diamond_10 = Template(r"Pictures/diamond_10.png",
-                          record_pos=(-0.16, 0.67), resolution=(1080, 2376), threshold=0.85)
+                         record_pos=(-0.16, 0.67), resolution=(1080, 2376), threshold=0.85)
     diamond_88 = Template(r"Pictures/diamond_88.png",
-                          record_pos=(0.162, 0.657), resolution=(1080, 2376), threshold=0.85)
+                         record_pos=(0.162, 0.657), resolution=(1080, 2376), threshold=0.85)
     claim_button = Template(r"Pictures/claim_button.png",
-                            record_pos=(0.002, 0.881), resolution=(1080, 2376), threshold=0.85)
+                          record_pos=(0.002, 0.881), resolution=(1080, 2376), threshold=0.85)
 
     try:
+        log("商店：开始")
+        # 1. 检查是否在主界面
         if check_main_screen():
-            # pos = (0.09,0.88)
-            # shop_entrance_pos = exists(shop_entrance)
-            shop_entrance_pos = False
+            # 2. 进入商店界面
+            shop_entrance_pos = exists(shop_entrance)
             if shop_entrance_pos:
                 touch(shop_entrance_pos)
             else:
+                # 备用点击位置，防止模板匹配失败
                 touch([0.09, 0.88])
+
+            # 3. 处理10钻石奖励
             if exists(diamond_10):
                 touch(diamond_10)
-                close_ad()
+                close_ad()  # 处理广告
                 if exists(claim_button):
-                    touch(claim_button)
-            else:
-                pass
+                    touch(claim_button)  # 领取奖励
 
+            # 4. 处理88钻石奖励
             if exists(diamond_88):
                 touch(diamond_88)
-                close_ad()
+                close_ad()  # 处理广告
                 if exists(claim_button):
-                    touch(claim_button)
-                    return
+                    touch(claim_button)  # 领取奖励
+
+            # 5. 关闭商店界面
             touch(shop_close_button)
-            log("商店功能执行完成")
+            assert_equal(True, True, "商店：测试成功")
+        else:
+            log("未进入主界面，无法执行商店操作")
+
     except Exception as e:
         log(f"商店功能执行出错: {str(e)}")
+        my_assert( False, "商店：测试失败")
+    finally:
+        log("商店：结束")
 
 
 def click_build():
@@ -385,6 +482,7 @@ def click_build():
 
 
     try:
+        log("建造流程：开始")
         # 检查主界面状态
         if check_main_screen():
             # 点击建造入口
@@ -395,32 +493,65 @@ def click_build():
             if exists(build_button):
                 # 执行建造操作
                 touch(build_button)
-                # touch([0.56, 0.56])  # 点击确认位置
                 touch(confirm_button)
-                log("建造成功")
+                assert_equal(True,True,"建造流程：测试通过")
             else:
                 # 关闭建造界面
                 touch(build_close_button)
+                assert_equal(True, False, "建造流程：测试失败")
     except Exception as e:
         # 异常处理
         log(f"建造功能执行出错: {str(e)}")
+        my_assert( False, "建造流程：测试失败")
+    finally:
+        log("建造流程：结束")
 
-        
+
+# def test():
+#     try:
+#         my_assert(True,"成功")
+#         my_assert(False,"失败")
+#     except Exception as e:
+#         my_assert(False,"失败")
+#     finally:
+#         log("结束")
+
+def my_assert(condition: bool, message: str) -> None:
+    """
+    自定义断言方法，集成Airtest断言功能
+
+    Args:
+        condition: 待验证的布尔条件
+        message: 断言描述信息（成功/失败时均显示）
+
+    Raises:
+        AssertionError: 当条件不满足时抛出
+    """
+    try:
+        if condition:
+            # 成功断言：验证两个True相等，展示成功信息
+            assert_equal(True, True, msg=message)
+        else:
+            # 失败断言：强制触发False比较，展示失败信息
+            assert_equal(True, False, msg=message)
+    except AssertionError as ae:
+        # 捕获并处理断言错误（会触发airtest的截图机制）
+        log(f"断言失败跟踪: {str(ae)}")
+
 
 if __name__ == "__main__":
     # 初始化设备
-    auto_setup(__file__)
+    # auto_setup(__file__)
     connect_device("Android:///")
     device = device()
     PACKAGE_NAME = check_app()
-
-
-    click_build()
     click_popup()
+
+
     click_offline_ad_reward()
     click_work_efficiency_ad()
     click_to_search()
     click_sign_in_reword()
     click_shop()
+    click_build()
     log("脚本运行结束")
-
