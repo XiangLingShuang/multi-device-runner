@@ -389,5 +389,5 @@ if __name__ == '__main__':
     if len(devices_id_list) == 0:
         print("未找到设备")
         exit(0)
-    air_folder = "SurvivorBase.air"
+    air_folder = "./idle_magic_school.air"
     run(devices_id_list, air_folder, run_all=True)

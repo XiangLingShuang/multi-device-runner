@@ -1,13 +1,13 @@
 {
-    "start": 1742548939.3124623,
-    "script": "Survivor IslandsDY.air",
-    "log_dir_path": ".\\result\\2025_03_21_17_22_19",
+    "start": 1746761457.0626233,
+    "script": "./idle_magic_school.air",
+    "log_dir_path": ".\\result\\2025_05_09_11_30_57",
     "tests": {
-        "10AD9T23YS002PJ": {
-            "status": 4294967295,
-            "device_name": "iqoo Z7i",
-            "path": ".\\10AD9T23YS002PJ\\log.html",
-            "log_path": ".\\10AD9T23YS002PJ\\log.txt"
+        "86002fe9": {
+            "status": 0,
+            "device_name": "NULL",
+            "path": ".\\86002fe9\\log.html",
+            "log_path": ".\\86002fe9\\log.txt"
         }
     }
 }

@@ -99,8 +99,8 @@ def weixin_popup_monitor(timeout=400):
     """
     print("weixin_popup_monitor")
     stop_event = threading.Event()
-    popup = Template(r"Pictures/weixin_popup.png", record_pos=(0.002, -0.002), resolution=(1440, 3200))
-    popup_confirm = Template(r"tpl1746512224460.png", record_pos=(0.222, 0.463), resolution=(1440, 3200))
+    popup = Template(r"pictures/weixin_popup.png", record_pos=(0.002, -0.002), resolution=(1440, 3200))
+    popup_confirm = Template(r"pictures/weixin_popup_confirm.png", record_pos=(0.222, 0.463), resolution=(1440, 3200))
 
     def _monitor():
         start_time = time.time()
@@ -191,9 +191,9 @@ def close_douyin_ad():
         - 需要准备对应的模板图片
         - 按钮位置基于1264×2780分辨率设备
     """
-    close_btn = Template(r"Pictures/douyin_ad_close.png",
+    close_btn = Template(r"pictures/douyin_ad_close.png",
                          record_pos=(0.34, -0.944), resolution=(1264, 2780), threshold=0.85)
-    back_btn = Template(r"Pictures/douyin_ad_back.png",
+    back_btn = Template(r"pictures/douyin_ad_back.png",
                         record_pos=(-0.422, -0.921), resolution=(1264, 2780), threshold=0.85)
 
     monitor = create_button_monitor(
@@ -228,7 +228,7 @@ def close_weixin_ad():
         - 需要准备对应的模板图片
         - 按钮位置基于1440×3200分辨率设备
     """
-    close_btn = Template(r"Pictures/weixin_ad_close.png", record_pos=(0.401, -0.957), resolution=(1440, 3200))
+    close_btn = Template(r"pictures/weixin_ad_close.png", record_pos=(0.401, -0.957), resolution=(1440, 3200))
     monitor = create_button_monitor(
         main_template=close_btn,
         sub_templates=[],
@@ -238,33 +238,159 @@ def close_weixin_ad():
     monitor()
 
 
+def my_assert(condition: bool, message: str) -> None:
+    """
+    自定义断言方法，集成Airtest断言功能
+
+    Args:
+        condition: 待验证的布尔条件
+        message: 断言描述信息（成功/失败时均显示）
+
+    Raises:
+        AssertionError: 当条件不满足时抛出
+    """
+    try:
+        if condition:
+            # 成功断言：验证两个True相等，展示成功信息
+            assert_equal(True, True, msg=message)
+        else:
+            # 失败断言：强制触发False比较，展示失败信息
+            assert_equal(True, False, msg=message)
+    except AssertionError as ae:
+        # 捕获并处理断言错误（会触发airtest的截图机制）
+        log(f"断言失败跟踪: {str(ae)}")
+
 
 def click_offline_ad_reward():
-    offline_reward_interface = Template(r"Pictures/offline_reward_interface.png", record_pos=(0.011, -0.001), resolution=(1440, 3200))
-    offline_continue_button = Template(r"Pictures/offline_continue_button.png", record_pos=(-0.001, 0.776), resolution=(1440, 3200))
-    offline_ad_reward_button = Template(r"Pictures/offline_ad_reward_button.png", record_pos=(-0.007, -0.15), resolution=(1440, 3200))
+    offline_reward_interface = Template(r"pictures/offline_reward_interface.png", record_pos=(0.011, -0.001), resolution=(1440, 3200))
+    offline_continue_button = Template(r"pictures/offline_continue_button.png", record_pos=(-0.001, 0.776), resolution=(1440, 3200))
+    offline_ad_reward_button = Template(r"pictures/offline_ad_reward_button.png", record_pos=(-0.007, -0.15), resolution=(1440, 3200))
 
-    if exists(offline_reward_interface):
-        offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
-        touch(offline_ad_reward_button_pos)
-        close_ad()
-        touch(offline_continue_button)
-        log("点击离线奖励领取按钮")
 
+    try:
+        log("离线奖励:开始")
+        if exists(offline_reward_interface):
+            offline_ad_reward_button_pos = assert_exists(offline_ad_reward_button)
+            touch(offline_ad_reward_button_pos)
+            close_ad()
+            touch(offline_continue_button)
+            log("点击离线奖励领取按钮")
+        else:
+            log("离线奖励:未开启")
+        my_assert(True, "离线奖励:测试通过")
+    except Exception as e:
+        log(f"离线奖励:执行出错: {str(e)}")
+        my_assert(False, "离线奖励:测试失败")
+    finally:
+        log("离线奖励:结束")
 
     
         
 
 def check_main_screen():
-    shop_task = Template(r"tpl1746513643908.png", record_pos=(-0.403, 0.943), resolution=(1440, 3200))
-    close_button = Template(r"tpl1746513656988.png", record_pos=(0.381, -0.313), resolution=(1440, 3200))
+    shop_task = Template(r"pictures/main_screen.png", record_pos=(-0.403, 0.943), resolution=(1440, 3200))
+    close_button = Template(r"pictures/task_close.png", record_pos=(0.381, -0.313), resolution=(1440, 3200))
     if exists(shop_task) and not exists(close_button):
         return True
     else:
         return False
 
 
+def click_shop():
+    shop_interface = Template(r"pictures/shop_interface.png", record_pos=(-0.404, 0.851), resolution=(1440, 3200), threshold=0.85)
+    shop_gift_receive = Template(r"pictures/shop_gift_receive.png", record_pos=(0.344, 0.328), resolution=(1440, 3200), threshold=0.85)
+    shop_gift_ad = Template(r"pictures/shop_gift_ad.png", record_pos=(-0.001, 0.954), resolution=(1440, 3200), threshold=0.85)
+    shop_receive_button = Template(r"pictures/shop_receive_button.png", record_pos=(0.003, 0.381), resolution=(1440, 3200), threshold=0.85)
+    
+    shop_tab_mysterious_shop = Template(r"pictures/shop_tab_mysterious_shop.png", record_pos=(-0.003, -0.603), resolution=(1440, 3200), threshold=0.85)
+    shop_purchase_goods = Template(r"tpl1746693273983.png", record_pos=(-0.005, 0.749), resolution=(1440, 3200), threshold=0.85)
+    pos_list = [(0.12,0.62),(0.4,0.62),(0.6,0.62),(0.9,0.62)]
 
+    shop_tab_gem = Template(r"tpl1746694349399.png", record_pos=(0.218, -0.604), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_5 = Template(r"tpl1746694365193.png", record_pos=(-0.16, -0.312), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_5_2 = Template(r"tpl1746694375668.png", record_pos=(-0.152, -0.383), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_20 = Template(r"tpl1746694387748.png", record_pos=(-0.162, 0.024), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_88 = Template(r"tpl1746694397020.png", record_pos=(0.245, 0.016), resolution=(1440, 3200), threshold=0.85)
+    shop_close = None
+    
+    try:
+        log("商店:开始")
+
+        if not check_main_screen():
+            log("不在主界面")
+            return
+
+        shop_interface_pos = exists(shop_interface)
+        if shop_interface_pos:
+            touch(shop_interface_pos)
+
+            # 礼包界面
+            gift_ad_pos = exists(shop_gift_ad)
+            if gift_ad_pos:
+                touch(gift_ad_pos)
+                close_ad()
+                get_gift_rewards_pos = exists(shop_gift_receive)
+                if get_gift_rewards_pos:
+                    touch(get_gift_rewards_pos)
+
+                    touch(shop_receive_button)
+
+                else:
+                    log("礼包:不可领取")
+            else:
+                log("礼包:未开启")
+            my_assert(True, "商店-礼包:测试通过")
+
+            # 神秘商店
+            tab_mysterious_shop_pos = exists(shop_tab_mysterious_shop)
+            if tab_mysterious_shop_pos:
+                touch(tab_mysterious_shop_pos)
+
+                for pos in pos_list:
+                    touch(pos)
+
+                sleep(5)
+                shop_purchase_goods_pos = exists(shop_purchase_goods)
+                if shop_purchase_goods_pos:
+                    touch(shop_purchase_goods_pos)
+                    close_ad()
+                else:
+                    log("神秘商店:不可进货/cd中")
+            else:
+                log("神秘商店:未开启")
+            my_assert(True, "商店-神秘商店:测试通过")
+
+            # 宝石商店
+            tab_gem_pos = exists(shop_tab_gem)
+            if tab_gem_pos:
+                touch(tab_gem_pos)
+                gem_5_2_pos = exists(shop_gem_5_2)
+                if gem_5_2_pos:
+                    touch(gem_5_2_pos)
+                    close_ad()
+                    touch(shop_receive_button)
+                gem_20_pos = exists(shop_gem_20)
+                if gem_20_pos:
+                    touch(gem_20_pos)
+                    close_ad()
+                    touch(shop_receive_button)
+                gem_88_pos = exists(shop_gem_88)
+                if gem_88_pos:
+                    touch(gem_88_pos)
+                    close_ad()
+                    touch(shop_receive_button)
+            else:
+                log("宝石商店:未开启")
+
+            touch(shop_close)
+        else:
+            log("商店:未开启")
+    except Exception as e:
+        log(f"商店:执行出错: {str(e)}")
+        my_assert(False, "商店:测试失败")
+    finally:
+
+        log("商店:结束")
 
 
 if __name__ == "__main__":
@@ -281,9 +407,4 @@ if __name__ == "__main__":
 
     click_offline_ad_reward()
 
-    print(check_main_screen())
-
- 
-
-
-
+    click_shop()

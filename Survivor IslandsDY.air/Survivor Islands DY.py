@@ -12,8 +12,8 @@ connect_device("Android:///")  # 显式连接设备
 auto_setup(__file__)
 
 # 导入模块
-sys.path.append(r'C:\SHIHAO\AirtestIDE\Scripts\Survivor IslandsDY.air\CloseAD.air')
-using(r"CloseAD.air")
+# sys.path.append(r'C:\SHIHAO\AirtestIDE\Scripts\Survivor IslandsDY.air\CloseAD.air')
+using(r"Survivor IslandsDY.air/CloseAD.air/CloseAD.py")
 from CloseAD import close_douyin_ad, init_device
 
 # 初始化设备（确保连接）
