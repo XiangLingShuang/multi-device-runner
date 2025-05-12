@@ -303,15 +303,15 @@ def click_shop():
     shop_receive_button = Template(r"pictures/shop_receive_button.png", record_pos=(0.003, 0.381), resolution=(1440, 3200), threshold=0.85)
     
     shop_tab_mysterious_shop = Template(r"pictures/shop_tab_mysterious_shop.png", record_pos=(-0.003, -0.603), resolution=(1440, 3200), threshold=0.85)
-    shop_purchase_goods = Template(r"tpl1746693273983.png", record_pos=(-0.005, 0.749), resolution=(1440, 3200), threshold=0.85)
+    shop_purchase_goods = Template(r"pictures/shop_purchase_goods.png", record_pos=(0.003, 0.749), resolution=(1440, 3200))
     pos_list = [(0.12,0.62),(0.4,0.62),(0.6,0.62),(0.9,0.62)]
 
-    shop_tab_gem = Template(r"tpl1746694349399.png", record_pos=(0.218, -0.604), resolution=(1440, 3200), threshold=0.85)
-    shop_gem_5 = Template(r"tpl1746694365193.png", record_pos=(-0.16, -0.312), resolution=(1440, 3200), threshold=0.85)
-    shop_gem_5_2 = Template(r"tpl1746694375668.png", record_pos=(-0.152, -0.383), resolution=(1440, 3200), threshold=0.85)
-    shop_gem_20 = Template(r"tpl1746694387748.png", record_pos=(-0.162, 0.024), resolution=(1440, 3200), threshold=0.85)
-    shop_gem_88 = Template(r"tpl1746694397020.png", record_pos=(0.245, 0.016), resolution=(1440, 3200), threshold=0.85)
-    shop_close = None
+    shop_tab_gem = Template(r"pictures/shop_tab_gem.png", record_pos=(0.232, -0.608), resolution=(1440, 3200))
+    shop_gem_5 = Template(r"pictures/shop_gem_5.png", record_pos=(-0.16, -0.315), resolution=(1440, 3200))
+    shop_gem_5_2 = Template(r"pictures/shop_gem_5_2.png", record_pos=(-0.153, -0.386), resolution=(1440, 3200))
+    shop_gem_20 = Template(r"pictures/shop_gem_20.png", record_pos=(-0.162, 0.019), resolution=(1440, 3200))
+    shop_gem_88 = Template(r"pictures/shop_gem_88.png", record_pos=(0.25, 0.015), resolution=(1440, 3200))
+    shop_close = Template(r"pictures/shop_close.png", record_pos=(-0.436, -0.74), resolution=(1440, 3200))
     
     try:
         log("商店:开始")
