@@ -1,6 +1,18 @@
+import sys
+import os
+# 获取当前脚本的绝对路径并解析符号链接
+script_path = os.path.realpath(__file__)
+# 获取脚本所在目录
+current_dir = os.path.dirname(script_path)
+# 获取上级目录作为项目根目录
+project_root = os.path.dirname(current_dir)
+print(f"项目根目录: {project_root}")
+sys.path.append(project_root)
+
+
 from airtest.core.android.adb import *
 from airtest.core.api import *
-from my_lib.common import create_button_monitor, set_project_root
+from my_lib.common import create_button_monitor
 
 
 def check_app():
@@ -192,7 +204,7 @@ def close_douyin_ad():
         - 按钮位置基于1264×2780分辨率设备
     """
     close_btn = Template(r"pictures/douyin_ad_close.png",
-                         record_pos=(0.34, -0.944), resolution=(1264, 2780), threshold=0.85)
+                         record_pos=(0.34, -0.944), resolution=(1264, 2780), threshold=0.825)
     back_btn = Template(r"pictures/douyin_ad_back.png",
                         record_pos=(-0.422, -0.921), resolution=(1264, 2780), threshold=0.85)
 
@@ -297,21 +309,21 @@ def check_main_screen():
 
 
 def click_shop():
-    shop_interface = Template(r"pictures/shop_interface.png", record_pos=(-0.404, 0.851), resolution=(1440, 3200), threshold=0.85)
+    shop_interface = Template(r"pictures/shop_interface.png", record_pos=(-0.404, 0.851), resolution=(1440, 3200), threshold=0.80)
     shop_gift_receive = Template(r"pictures/shop_gift_receive.png", record_pos=(0.344, 0.328), resolution=(1440, 3200), threshold=0.85)
     shop_gift_ad = Template(r"pictures/shop_gift_ad.png", record_pos=(-0.001, 0.954), resolution=(1440, 3200), threshold=0.85)
     shop_receive_button = Template(r"pictures/shop_receive_button.png", record_pos=(0.003, 0.381), resolution=(1440, 3200), threshold=0.85)
     
     shop_tab_mysterious_shop = Template(r"pictures/shop_tab_mysterious_shop.png", record_pos=(-0.003, -0.603), resolution=(1440, 3200), threshold=0.85)
-    shop_purchase_goods = Template(r"pictures/shop_purchase_goods.png", record_pos=(0.003, 0.749), resolution=(1440, 3200))
+    shop_purchase_goods = Template(r"pictures/shop_purchase_goods.png", record_pos=(0.003, 0.749), resolution=(1440, 3200), threshold=0.85)
     pos_list = [(0.12,0.62),(0.4,0.62),(0.6,0.62),(0.9,0.62)]
 
-    shop_tab_gem = Template(r"pictures/shop_tab_gem.png", record_pos=(0.232, -0.608), resolution=(1440, 3200))
-    shop_gem_5 = Template(r"pictures/shop_gem_5.png", record_pos=(-0.16, -0.315), resolution=(1440, 3200))
-    shop_gem_5_2 = Template(r"pictures/shop_gem_5_2.png", record_pos=(-0.153, -0.386), resolution=(1440, 3200))
-    shop_gem_20 = Template(r"pictures/shop_gem_20.png", record_pos=(-0.162, 0.019), resolution=(1440, 3200))
-    shop_gem_88 = Template(r"pictures/shop_gem_88.png", record_pos=(0.25, 0.015), resolution=(1440, 3200))
-    shop_close = Template(r"pictures/shop_close.png", record_pos=(-0.436, -0.74), resolution=(1440, 3200))
+    shop_tab_gem = Template(r"tpl1747279393604.png", record_pos=(0.102, -0.601), resolution=(1440, 3200))
+    shop_gem_5 = Template(r"pictures/shop_gem_5.png", record_pos=(-0.16, -0.315), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_5_2 = Template(r"pictures/shop_gem_5_2.png", record_pos=(-0.153, -0.386), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_20 = Template(r"pictures/shop_gem_20.png", record_pos=(-0.162, 0.019), resolution=(1440, 3200), threshold=0.85)
+    shop_gem_88 = Template(r"pictures/shop_gem_88.png", record_pos=(0.25, 0.015), resolution=(1440, 3200), threshold=0.85)
+    shop_close = Template(r"pictures/shop_close.png", record_pos=(-0.436, -0.74), resolution=(1440, 3200), threshold=0.85)
     
     try:
         log("商店:开始")
@@ -378,7 +390,9 @@ def click_shop():
                 if gem_88_pos:
                     touch(gem_88_pos)
                     close_ad()
-                    touch(shop_receive_button)
+                    shop_gem_88_pos = exists(shop_gem_88)
+                    if shop_gem_88_pos:
+                        touch(shop_gem_88_pos)
             else:
                 log("宝石商店:未开启")
 
@@ -389,12 +403,84 @@ def click_shop():
         log(f"商店:执行出错: {str(e)}")
         my_assert(False, "商店:测试失败")
     finally:
-
         log("商店:结束")
 
 
+def click_task():
+    task_interface = Template(r"tpl1747018098786.png", record_pos=(-0.399, 1.011), resolution=(1440, 3200), threshold=0.85)
+    task_receive_button = Template(r"tpl1747018060335.png", record_pos=(-0.005, 0.24), resolution=(1440, 3200), threshold=0.85)
+    task_close_button = Template(r"tpl1747018068358.png", record_pos=(0.349, -0.336), resolution=(1440, 3200), threshold=0.85)
+
+    try:
+        if check_main_screen():
+            task_interface_pos = exists(task_interface)
+            if task_interface_pos:
+                touch(task_interface_pos)
+                task_receive_button_pos = exists(task_receive_button)
+                if task_receive_button_pos:
+                    touch(task_receive_button_pos)
+                    my_assert(True, "任务：领取奖励成功")
+                else:
+                    log("任务:未完成")
+                task_close_button_pos = exists(task_close_button)
+                if task_close_button_pos:
+                    touch(task_close_button_pos)
+            else:
+                log("任务:未开启")
+                my_assert(True,"任务：未有完成的任务")
+        else:
+            log("不在主界面")
+    except Exception as e:
+        log(f"任务:执行出错: {str(e)}")
+        my_assert(False, "任务:测试失败")
+    finally:
+        log("任务:结束")
+
+
+def click_risk():
+    risk_interface = Template(r"tpl1747019728377.png", record_pos=(0.061, 1.011), resolution=(1440, 3200))
+    risk_battle = Template(r"tpl1747019750162.png", record_pos=(0.042, 0.153), resolution=(1440, 3200))
+    risk_close = Template(r"tpl1747019759508.png", record_pos=(0.406, -0.15), resolution=(1440, 3200))
+
+    risk_go = Template(r"tpl1747019793502.png", record_pos=(0.382, 0.032), resolution=(1440, 3200))
+    
+    risk_receive = Template(r"tpl1747281281367.png", record_pos=(-0.008, 0.249), resolution=(1440, 3200))
+    risk_receive_ad = Template(r"tpl1747281301218.png", record_pos=(0.252, 0.25), resolution=(1440, 3200))
+    
+    
+    try:
+        log("冒险:开始")
+        if check_main_screen():
+            risk_interface_pos = exists(risk_interface)
+            if risk_interface_pos:
+                touch(risk_interface_pos)
+                risk_battle_pos = exists(risk_battle)
+                if risk_battle_pos:
+                    touch(risk_battle_pos)
+                else:
+                    log("冒险:进行中")
+                    
+                risk_receive_pos = exists(risk_receive)
+                if risk_receive_pos:
+                    touch(risk_receive_pos)
+                    
+                risk_go_pos = exists(risk_go)
+                if risk_go_pos:
+                    touch(risk_go_pos)
+                    
+            else:
+                log("冒险:未开启")
+        else:
+            log("不在主界面")
+    except Exception as e:
+        log(f"冒险:执行出错: {str(e)}")
+        my_assert(False, "冒险:测试失败")
+    finally:
+        log("冒险:结束")
+
 if __name__ == "__main__":
-    set_project_root()
+
+
 
 
     # 初始化设备
@@ -403,8 +489,14 @@ if __name__ == "__main__":
     device = device()
     PACKAGE_NAME = check_app()
 
-    click_popup()
+    # click_popup()
+    #
+    # click_offline_ad_reward()
+    # click_shop()
+    # click_task()
+    
+    click_risk()
 
-    click_offline_ad_reward()
 
-    click_shop()
+
+
