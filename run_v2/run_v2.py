@@ -1,11 +1,23 @@
 # -*- encoding=utf-8 -*-
 # Run Airtest in parallel on multi-device
+import sys
 import os
+
+# 获取当前脚本的绝对路径并解析符号链接
+script_path = os.path.realpath(__file__)
+# 获取脚本所在目录
+current_dir = os.path.dirname(script_path)
+# 获取上级目录作为项目根目录
+project_root = os.path.dirname(current_dir)
+print(f"项目根目录: {project_root}")
+sys.path.append(project_root)
+
 import traceback
 import subprocess
 import webbrowser
 import time
 import json
+
 
 import pandas as pd
 from airtest.core.android import Android
@@ -15,36 +27,39 @@ from jinja2 import Environment, FileSystemLoader
 from my_lib.file_process import *
 
 
-def run(devices, air, run_all=False):
+def run(device, air_scripts, run_all=False):
     """
-    运行测试脚本的主函数。
+    在单个设备上依次运行多个测试脚本的主函数。
 
-    :param devices: 要进行测试的设备列表。
-    :param air: 测试脚本的路径。
+    :param device: 要进行测试的设备序列号。
+    :param air_scripts: 测试脚本路径列表。
     :param run_all: 是否重新开始测试。True 表示从头开始测试,False 表示从data.json保存的进度继续测试。 
     """
     try:
         # 加载测试进度数据
-        results = load_json_data(air, run_all)
+        results = load_json_data(air_scripts[0], run_all)  # 使用第一个脚本初始化
+        results['scripts'] = air_scripts  # 保存所有脚本路径
 
-        # 在多个设备上启动测试任务
-        tasks = run_on_multi_device(devices, air, results, run_all)
+        for air in air_scripts:
+            print(f"\n开始执行脚本: {air}")
+            # 在设备上启动测试任务
+            task = run_on_single_device(device, air, results, run_all)
+            
+            if task:
+                # 等待测试任务完成
+                status = task['process'].wait()
 
-        for task in tasks:
-            # 等待每个测试任务完成
-            status = task['process'].wait()
+                # 生成设备的测试报告，并更新测试状态
+                if device not in results['tests']:
+                    results['tests'][device] = {}
+                results['tests'][device][air] = run_one_report(task['air'], task)
+                results['tests'][device][air]['status'] = status
 
-            # 生成单个设备的测试报告，并更新测试状态
-            results['tests'][task['dev']] = run_one_report(task['air'], task)
-            results['tests'][task['dev']]['status'] = status
-
-            # 将当前的测试结果保存到data.json文件
-            json.dump(results, open('data.json', "w"), indent=4)
+                # 将当前的测试结果保存到data.json文件
+                json.dump(results, open('run_v2/data_v2.json', "w"), indent=4)
 
         # 生成所有测试的汇总报告
         run_summary(results)
-        # update_device_run_count(results['tests'])
-
 
     except Exception as e:
         # 如果出现异常，打印堆栈跟踪信息
@@ -144,6 +159,55 @@ def run_on_multi_device(devices, air, results, run_all):
     return tasks
 
 
+def run_on_single_device(device, air, results, run_all):
+    """
+    在单个设备上运行Airtest脚本。
+
+    :param device: 设备序列号。
+    :param air: Airtest脚本的路径。
+    :param results: 包含之前测试结果的字典。
+    :param run_all: 是否重新开始测试。
+    :return: 返回测试任务信息。
+    """
+    # 检查是否需要跳过当前脚本的测试
+    if not run_all and device in results['tests'] and air in results['tests'][device] and results['tests'][device][air].get('status') == 0:
+        print(f"跳过设备 {device} 的脚本 {air}")
+        return None
+
+    # 为设备和脚本创建日志目录
+    log_dir = create_device_folder(device, results['log_dir_path'], air)
+    
+    # 构造Airtest运行命令
+    cmd = [
+        "airtest",
+        "run",
+        air,
+        "--device",
+        f"Android:///{device}",
+        "--log",
+        log_dir
+    ]
+
+    # 检查Android版本决定是否添加录制选项
+    adb = ADB(serialno=device)
+    android_version = int(adb.cmd(f"-s {device} shell getprop ro.build.version.release"))
+    if android_version not in [15]:
+        cmd.append('--recording')
+
+    try:
+        # 使用subprocess启动测试
+        return {
+            'process': subprocess.Popen(cmd, cwd=os.getcwd()),
+            'dev': device,
+            'air': air,
+            'path': log_dir,
+        }
+    except Exception as e:
+        print(f"在设备 {device} 上运行脚本 {air} 时出错: {e}")
+        traceback.print_exc()
+        return None
+
+
 def create_time_folder(timestamp):
     """
     根据给定的时间戳创建一个以时间格式命名的文件夹。
@@ -173,19 +237,23 @@ def create_time_folder(timestamp):
     return folder_path
 
 
-def create_device_folder(device, time_folder_dir):
+def create_device_folder(device, time_folder_dir, air_path):
     """
-    在指定的时间文件夹内为特定设备创建一个子文件夹。
+    在指定的时间文件夹内为特定设备和脚本创建子文件夹。
 
     :param device: 设备标识符，用于命名子文件夹。
     :param time_folder_dir: 时间文件夹的路径，用作父目录。
+    :param air_path: 脚本路径，用于创建脚本目录。
     :return: 创建的设备文件夹的路径。
     """
     # 使用设备标识符创建文件夹名称，替换掉文件名中不允许的字符
     device_folder_name = device.replace(".", "_").replace(':', '_')
 
-    # 构造设备文件夹的完整路径
-    device_folder_dir = os.path.join(time_folder_dir, device_folder_name)
+    # 获取脚本名称（去除.air后缀）
+    script_name = os.path.splitext(os.path.basename(air_path))[0]
+
+    # 构造完整的路径：时间/序列号/脚本名
+    device_folder_dir = os.path.join(time_folder_dir, device_folder_name, script_name)
 
     # 如果文件夹不存在，则创建它
     if not os.path.exists(device_folder_dir):
@@ -203,11 +271,12 @@ def run_one_report(air, task_temp):
     :param air: Airtest脚本的路径。
     :return: 包含测试报告信息的字典。
     """
-    # 为设备创建日志目录
+    # 获取日志目录
     log_dir = task_temp['path']
     dev = task_temp['dev']
     log_txt = os.path.join(log_dir, 'log.txt')
     log_html = os.path.join(log_dir, 'log.html')
+    
     try:
         # 如果日志文件存在，生成测试报告
         if os.path.isfile(log_txt):
@@ -224,12 +293,16 @@ def run_one_report(air, task_temp):
             ]
             ret = subprocess.call(cmd, shell=True, cwd=os.getcwd())
             device_name = get_devices(dev)
-            path = f".\\{dev}"
+            
+            # 计算相对路径：序列号/脚本名/log.html
+            script_name = os.path.splitext(os.path.basename(air))[0]
+            relative_path = os.path.join(dev.replace(".", "_").replace(':', '_'), script_name)
+            
             return {
                 'status': ret,
                 'device_name': device_name,
-                'path': os.path.join(path, 'log.html'),
-                'log_path': os.path.join(path, 'log.txt')
+                'path': os.path.join(relative_path, 'log.html'),
+                'log_path': os.path.join(relative_path, 'log.txt')
             }
         else:
             print(f"Report build Failed. File not found in dir {log_txt}")
@@ -246,16 +319,29 @@ def run_summary(data):
     :param data: 包含所有测试数据的字典。
     """
     try:
+        total_success = 0
+        total_count = 0
+        
+        # 计算所有脚本的成功和总数
+        for device_results in data['tests'].values():
+            for script_result in device_results.values():
+                if script_result.get('status') == 0:
+                    total_success += 1
+                total_count += 1
+
         summary = {
             'time': "%.3f" % (time.time() - data['start']),
-            'success': [item['status'] for item in data['tests'].values()].count(0),
-            'count': len(data['tests'])
+            'success': total_success,
+            'count': total_count,
+            'scripts': data.get('scripts', [])  # 添加脚本列表到汇总信息
         }
         summary.update(data)
         summary['start'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['start']))
+        
         env = Environment(loader=FileSystemLoader(os.getcwd()), trim_blocks=True)
-        html = env.get_template('report_tpl.html').render(data=summary)
+        html = env.get_template('run_v2/report_tpl_v2.html').render(data=summary)
         report_path = os.path.join(data['log_dir_path'], 'report.html')
+        
         with open(report_path, "w", encoding="utf-8") as f:
             f.write(html)
         webbrowser.open(report_path)
@@ -384,10 +470,21 @@ def read_txt(path):
 device_info_path = r'.\devices\device_info.xlsx'
 
 if __name__ == '__main__':
+    # 获取已连接的设备列表
     devices_id_list = [tmp[0] for tmp in ADB().devices()]
-    print(devices_id_list)
+    print(f"发现设备: {devices_id_list}")
+    
     if len(devices_id_list) == 0:
         print("未找到设备")
         exit(0)
-    air_folder = "test.air"
-    run(devices_id_list, air_folder, run_all=True)
+        
+    # 要执行的脚本列表
+    air_scripts = [
+        "test.air",
+        "test2.air",
+    ]
+    
+    # 使用第一个设备执行所有脚本
+    device = devices_id_list[0]
+    print(f"使用设备 {device} 执行脚本")
+    run(device, air_scripts, run_all=True)
