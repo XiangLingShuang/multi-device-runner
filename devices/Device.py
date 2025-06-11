@@ -1,4 +1,5 @@
 import math
+import os
 import subprocess
 import time
 
@@ -6,7 +7,7 @@ import pandas as pd
 
 
 class Device:
-    device_info_path = './devices/device_info.xlsx'
+    device_info_path = os.path.join('.', 'devices', 'device_info.xlsx')
 
     def __init__(self,  adb_path=r'adb'):
         self.device_serial_number = None

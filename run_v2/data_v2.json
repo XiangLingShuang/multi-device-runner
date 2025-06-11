@@ -1,25 +1,26 @@
 {
-    "start": 1749550739.035476,
-    "script": "test.air",
-    "log_dir_path": ".\\result\\2025_06_10_18_18_59",
+    "start": 1749634370.0964441,
+    "script": "test\\test.air",
+    "log_dir_path": ".\\result\\2025_06_11_17_32_50",
     "tests": {
-        "10AE9R0KME000H4": {
+        "h6xwqwkzqsa6onj7": {
             "test.air": {
                 "status": 0,
-                "device_name": "NULL",
-                "path": "10AE9R0KME000H4\\test\\log.html",
-                "log_path": "10AE9R0KME000H4\\test\\log.txt"
+                "device_name": "redmi note 8 pro",
+                "path": "h6xwqwkzqsa6onj7\\test\\log.html",
+                "log_path": "h6xwqwkzqsa6onj7\\test\\log.txt"
             },
             "test2.air": {
-                "status": 0,
-                "device_name": "NULL",
-                "path": "10AE9R0KME000H4\\test2\\log.html",
-                "log_path": "10AE9R0KME000H4\\test2\\log.txt"
+                "status": 4294967295,
+                "device_name": "redmi note 8 pro",
+                "path": "h6xwqwkzqsa6onj7\\test2\\log.html",
+                "log_path": "h6xwqwkzqsa6onj7\\test2\\log.txt"
             }
         }
     },
     "scripts": [
         "test.air",
         "test2.air"
-    ]
+    ],
+    "script_project_name": "test"
 }

@@ -95,8 +95,7 @@ def run_on_multi_device(devices, air, results, run_all):
     :return: 返回一个包含测试任务的列表。
     """
     tasks = []
-    for dev in devices:
-        # 检查是否需要跳过当前设备的测试
+    for dev in devices:        # 检查是否需要跳过当前设备的测试
         if not run_all and results['tests'].get(dev) and results['tests'][dev].get('status') == 0:
             print(f"Skip device {dev}")
             continue
@@ -104,17 +103,7 @@ def run_on_multi_device(devices, air, results, run_all):
         # 为每个设备创建一个日志目录
         log_dir = create_device_folder(dev, results['log_dir_path'])
 
-        # # 构造Airtest运行命令
-        # cmd = [
-        #     "airtest",
-        #     "run",
-        #     air,
-        #     "--device",
-        #     f"Android:///{dev}",
-        #     "--log",
-        #     log_dir,
-        #     "--recording"
-        # ]
+        # 构造Airtest运行命令
         cmd = [
             "airtest",
             "run",
@@ -124,10 +113,14 @@ def run_on_multi_device(devices, air, results, run_all):
             "--log",
             log_dir
         ]
+        
+        # 获取Android版本号，决定是否添加录制选项
         adb = ADB(serialno=dev)
         android_version = int(adb.cmd(f"-s {dev} shell getprop ro.build.version.release"))
-        print(android_version,type(android_version))
-        if android_version not in [15]:
+        print(f"设备 {dev} Android版本: {android_version}")
+        
+        # 如果Android版本小于15，添加录制参数
+        if android_version < 15:
             cmd.append('--recording')
 
         try:
@@ -149,10 +142,9 @@ def create_time_folder(timestamp):
     根据给定的时间戳创建一个以时间格式命名的文件夹。
 
     :param timestamp: 用于生成文件夹名称的时间戳。
-    :return: 创建的文件夹的路径。
-    """
+    :return: 创建的文件夹的路径。    """
     # 基础目录
-    base_dir = '.\\result'
+    base_dir = os.path.join('.', 'result')
 
     # 将时间戳转换为时间元组
     time_tuple = time.localtime(timestamp)
@@ -161,13 +153,11 @@ def create_time_folder(timestamp):
     folder_name = time.strftime("%Y_%m_%d_%H_%M_%S", time_tuple)
 
     # 构造目标文件夹的完整路径
-    folder_path = os.path.join(base_dir, folder_name)
-
-    # 如果文件夹不存在，则创建它
+    folder_path = os.path.join(base_dir, folder_name)    # 如果文件夹不存在，则创建它
     if not os.path.exists(folder_path):
         os.makedirs(folder_path, exist_ok=True)
-            # 将文件夹名保存在 current_log_folder.txt 中
-        save_txt_data(folder_name,os.path.join(base_dir, 'current_log_folder.txt'))
+        # 将文件夹名保存在 current_log_folder.txt 中
+        save_txt_data(folder_name, os.path.join(base_dir, 'current_log_folder.txt'))
 
     # 返回创建的文件夹路径
     return folder_path
@@ -381,7 +371,7 @@ def read_txt(path):
     return None  # 如果没有找到"data-ret-time"，返回None
 
 
-device_info_path = r'.\devices\device_info.xlsx'
+device_info_path = os.path.join('.', 'devices', 'device_info.xlsx')
 
 if __name__ == '__main__':
     devices_id_list = [tmp[0] for tmp in ADB().devices()]
@@ -389,5 +379,5 @@ if __name__ == '__main__':
     if len(devices_id_list) == 0:
         print("未找到设备")
         exit(0)
-    air_folder = "test.air"
+    air_folder = os.path.join("test", "test.air")
     run(devices_id_list, air_folder, run_all=True)

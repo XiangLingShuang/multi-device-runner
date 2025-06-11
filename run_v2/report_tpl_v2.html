@@ -141,14 +141,12 @@
     .table-col.medium {
         width: 180px;
         text-align: center;
-    }
-
-    .table-col:first-child {
+    }    .table-col:first-child {
         border: none;
     }
 
     .table-col.long {
-        width: calc(100% - 600px);  /* 调整宽度以适应新增列 */
+        width: 25%;  /* 缩小长列的宽度 */
     }
 
     .table-col.detail {
@@ -257,7 +255,7 @@
         <div class="container">
             <div class="main">
                 <div class="material">
-                    <h1>{{data['script']}}</h1>
+                    <h1>{{data['script_project_name'] if data['script_project_name'] else data['script']}}</h1>
                     <div class="center">
                         <div class="btn lang">Switch to English version</div>
                         <div class="time zh">开始时间：{{data['start']}}，耗时 <b>{{data['time']}}</b> 秒</div>
@@ -285,11 +283,11 @@
                             <div class="table-row table-head">
                                 <div class="table-col short zh">序号</div>
                                 <div class="table-col short zh">状态</div>
-                                <div class="table-col medium zh">设备</div>
+                                <div class="table-col long zh">设备</div>
                                 <div class="table-col medium zh">脚本名称</div>
                                 <div class="table-col short en">id</div>
                                 <div class="table-col short en">result</div>
-                                <div class="table-col medium en">device</div>
+                                <div class="table-col long en">device</div>
                                 <div class="table-col medium en">script</div>
                                 <div class="table-col placeholder">--</div>
                             </div>
@@ -305,7 +303,7 @@
                                     <div class="table-col short en {{'success' if result['status']==0 else 'failed'}}">
                                         {{"success" if result['status']==0 else "failed"}}
                                     </div>
-                                    <div class="table-col medium">{{dev+'('+result['device_name']+')'}}</div>
+                                    <div class="table-col long">{{dev+'('+result['device_name']+')'}}</div>
                                     <div class="table-col medium">{{script}}</div>
                                     <div class="table-col detail zh">点击可查看详情</div>
                                     <div class="table-col detail en">click to see detail</div>

@@ -27,18 +27,21 @@ from jinja2 import Environment, FileSystemLoader
 from my_lib.file_process import *
 
 
-def run(device, air_scripts, run_all=False):
+def run(device, air_scripts, script_project_name, run_all=False):
     """
     在单个设备上依次运行多个测试脚本的主函数。
 
     :param device: 要进行测试的设备序列号。
     :param air_scripts: 测试脚本路径列表。
+    :param script_project_name: 脚本项目名称。
     :param run_all: 是否重新开始测试。True 表示从头开始测试,False 表示从data.json保存的进度继续测试。 
     """
     try:
         # 加载测试进度数据
         results = load_json_data(air_scripts[0], run_all)  # 使用第一个脚本初始化
-        results['scripts'] = air_scripts  # 保存所有脚本路径
+        # 只保存脚本文件名
+        results['scripts'] = [os.path.basename(x) for x in air_scripts]  # 保存所有脚本文件名
+        results['script_project_name'] = script_project_name  # 保存脚本项目名称
 
         for air in air_scripts:
             print(f"\n开始执行脚本: {air}")
@@ -52,8 +55,10 @@ def run(device, air_scripts, run_all=False):
                 # 生成设备的测试报告，并更新测试状态
                 if device not in results['tests']:
                     results['tests'][device] = {}
-                results['tests'][device][air] = run_one_report(task['air'], task)
-                results['tests'][device][air]['status'] = status
+                # 只用文件名作为key
+                air_file = os.path.basename(air)
+                results['tests'][device][air_file] = run_one_report(task['air'], task)
+                results['tests'][device][air_file]['status'] = status
 
                 # 将当前的测试结果保存到data.json文件
                 json.dump(results, open('run_v2/data_v2.json', "w"), indent=4)
@@ -73,9 +78,8 @@ def load_json_data(air, run_all):
     :param air: 测试脚本的路径。
     :param run_all: 是否重新开始测试。True 表示从头开始测试，False 表示从data.json保存的进度继续测试。
     :return: 返回包含测试进度的字典。
-    """
-    # 拼接当前工作目录和data.json文件的完整路径
-    json_file = os.path.join(os.getcwd(), 'data.json')
+    """    # 拼接当前工作目录和data.json文件的完整路径
+    json_file = os.path.join(os.getcwd(), 'run_v2', 'data_v2.json')
 
     # 检查是否需要继续上一次的进度
     if (not run_all) and os.path.isfile(json_file):
@@ -114,22 +118,10 @@ def run_on_multi_device(devices, air, results, run_all):
         # 检查是否需要跳过当前设备的测试
         if not run_all and results['tests'].get(dev) and results['tests'][dev].get('status') == 0:
             print(f"Skip device {dev}")
-            continue
-
-        # 为每个设备创建一个日志目录
+            continue        # 为每个设备创建一个日志目录
         log_dir = create_device_folder(dev, results['log_dir_path'])
 
-        # # 构造Airtest运行命令
-        # cmd = [
-        #     "airtest",
-        #     "run",
-        #     air,
-        #     "--device",
-        #     f"Android:///{dev}",
-        #     "--log",
-        #     log_dir,
-        #     "--recording"
-        # ]
+        # 构造Airtest运行命令
         cmd = [
             "airtest",
             "run",
@@ -139,10 +131,14 @@ def run_on_multi_device(devices, air, results, run_all):
             "--log",
             log_dir
         ]
+        
+        # 获取Android版本号，决定是否添加录制选项
         adb = ADB(serialno=dev)
         android_version = int(adb.cmd(f"-s {dev} shell getprop ro.build.version.release"))
-        print(android_version,type(android_version))
-        if android_version not in [15]:
+        print(f"设备 {dev} Android版本: {android_version}")
+        
+        # 如果Android版本小于15，添加录制参数
+        if android_version < 15:
             cmd.append('--recording')
 
         try:
@@ -170,14 +166,14 @@ def run_on_single_device(device, air, results, run_all):
     :return: 返回测试任务信息。
     """
     # 检查是否需要跳过当前脚本的测试
-    if not run_all and device in results['tests'] and air in results['tests'][device] and results['tests'][device][air].get('status') == 0:
+    air_file = os.path.basename(air)
+    if not run_all and device in results['tests'] and air_file in results['tests'][device] and results['tests'][device][air_file].get('status') == 0:
         print(f"跳过设备 {device} 的脚本 {air}")
         return None
 
     # 为设备和脚本创建日志目录
     log_dir = create_device_folder(device, results['log_dir_path'], air)
-    
-    # 构造Airtest运行命令
+      # 构造Airtest运行命令
     cmd = [
         "airtest",
         "run",
@@ -188,10 +184,13 @@ def run_on_single_device(device, air, results, run_all):
         log_dir
     ]
 
-    # 检查Android版本决定是否添加录制选项
+    # 获取Android版本号，决定是否添加录制选项
     adb = ADB(serialno=device)
     android_version = int(adb.cmd(f"-s {device} shell getprop ro.build.version.release"))
-    if android_version not in [15]:
+    print(f"设备 {device} Android版本: {android_version}")
+    
+    # 如果Android版本小于15，添加录制参数
+    if android_version < 15:
         cmd.append('--recording')
 
     try:
@@ -213,10 +212,9 @@ def create_time_folder(timestamp):
     根据给定的时间戳创建一个以时间格式命名的文件夹。
 
     :param timestamp: 用于生成文件夹名称的时间戳。
-    :return: 创建的文件夹的路径。
-    """
+    :return: 创建的文件夹的路径。    """
     # 基础目录
-    base_dir = '.\\result'
+    base_dir = os.path.join('.', 'result')
 
     # 将时间戳转换为时间元组
     time_tuple = time.localtime(timestamp)
@@ -225,13 +223,11 @@ def create_time_folder(timestamp):
     folder_name = time.strftime("%Y_%m_%d_%H_%M_%S", time_tuple)
 
     # 构造目标文件夹的完整路径
-    folder_path = os.path.join(base_dir, folder_name)
-
-    # 如果文件夹不存在，则创建它
+    folder_path = os.path.join(base_dir, folder_name)    # 如果文件夹不存在，则创建它
     if not os.path.exists(folder_path):
         os.makedirs(folder_path, exist_ok=True)
-            # 将文件夹名保存在 current_log_folder.txt 中
-        save_txt_data(folder_name,os.path.join(base_dir, 'current_log_folder.txt'))
+        # 将文件夹名保存在 current_log_folder.txt 中
+        save_txt_data(folder_name, os.path.join(base_dir, 'current_log_folder.txt'))
 
     # 返回创建的文件夹路径
     return folder_path
@@ -384,9 +380,8 @@ def update_device_run_count(results_tests):
 
     :param results_tests: 包含测试结果的字典，其中key是设备序列号。
     """
-    try:
-        # 读取Excel文件
-        file_path = './devices/device_count.xlsx'
+    try:        # 读取Excel文件
+        file_path = os.path.join('.', 'devices', 'device_count.xlsx')
         df = pd.read_excel(file_path)
 
         # 遍历results_tests中的每个设备序列号
@@ -422,27 +417,29 @@ def save_open_app_time(results, path):
         df = pd.read_excel(path)
         base_path = results['log_dir_path']
         # 遍历results_tests中的每个设备序列号
-        for dev_serial, data in results['tests'].items():
-            if data['status'] == 0:
-                # 检查序列号是否在DataFrame中
-                log_path = f"{base_path}\\{dev_serial}\\log.txt"
-                print(log_path)
-                lost_time = read_txt(log_path)
+        for dev_serial, scripts_data in results['tests'].items():
+            for script_name, script_data in scripts_data.items():
+                if script_data.get('status') == 0:
+                    # 检查序列号是否在DataFrame中
+                    log_path = os.path.join(base_path, dev_serial.replace(".", "_").replace(':', '_'), 
+                                          os.path.splitext(os.path.basename(script_name))[0], 'log.txt')
+                    print(log_path)
+                    lost_time = read_txt(log_path)
 
-                if dev_serial in df['序列号'].values:
-                    # 如果在，则增加运行次数
-                    df.loc[df['序列号'] == dev_serial, '对比时间'] = lost_time
-                    df.loc[df['序列号'] == dev_serial, '实际时间'] = df.loc[df['序列号'] == dev_serial, '运行时间'] - df.loc[df['序列号'] == dev_serial, '对比时间']
-                else:
-                    # 如果不在，则添加新行
-                    new_row = {
-                        '序列号': dev_serial,
-                        '名称': data['device_name'],
-                        '运行时间': None,
-                        '对比时间': None,
-                        '实际时间': None
-                    }
-                    df = df.append(new_row, ignore_index=True)
+                    if dev_serial in df['序列号'].values:
+                        # 如果在，则增加运行次数
+                        df.loc[df['序列号'] == dev_serial, '对比时间'] = lost_time
+                        df.loc[df['序列号'] == dev_serial, '实际时间'] = df.loc[df['序列号'] == dev_serial, '运行时间'] - df.loc[df['序列号'] == dev_serial, '对比时间']
+                    else:
+                        # 如果不在，则添加新行
+                        new_row = {
+                            '序列号': dev_serial,
+                            '名称': script_data['device_name'],
+                            '运行时间': None,
+                            '对比时间': lost_time,
+                            '实际时间': None
+                        }
+                        df = df.append(new_row, ignore_index=True)
 
         # 将更新后的DataFrame写回Excel文件
         df.to_excel(path, index=False)
@@ -467,7 +464,7 @@ def read_txt(path):
     return None  # 如果没有找到"data-ret-time"，返回None
 
 
-device_info_path = r'.\devices\device_info.xlsx'
+device_info_path = os.path.join('.', 'devices', 'device_info.xlsx')
 
 if __name__ == '__main__':
     # 获取已连接的设备列表
@@ -477,14 +474,14 @@ if __name__ == '__main__':
     if len(devices_id_list) == 0:
         print("未找到设备")
         exit(0)
-        
-    # 要执行的脚本列表
+          # 要执行的脚本列表
+    script_project_name = "test"
     air_scripts = [
-        "test.air",
-        "test2.air",
+        os.path.join(script_project_name, "test.air"),
+        os.path.join(script_project_name, "test2.air"),
     ]
-    
-    # 使用第一个设备执行所有脚本
+
+      # 使用第一个设备执行所有脚本
     device = devices_id_list[0]
     print(f"使用设备 {device} 执行脚本")
-    run(device, air_scripts, run_all=True)
+    run(device, air_scripts, script_project_name, run_all=True)
